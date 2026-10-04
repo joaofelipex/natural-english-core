@@ -375,12 +375,12 @@
         <button onclick="closeScenarioModal()" class="text-slate-400 hover:text-white">✕</button>
       </div>
       <p class="text-xs text-slate-300">
-        Type any real situation you want to practice in English. The Gemini Free Tier will create natural chunks with IPA and zero translation.
+        Type any real situation you want to practice in English. The AI Engine will create natural chunks with IPA and zero translation.
       </p>
       <input id="custom-topic-input" type="text" placeholder="e.g., Explaining technical debt to management" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
       
       <div class="flex justify-between items-center pt-2">
-        <span class="text-[11px] text-slate-400 font-mono">Model: Gemini 2.5 Flash Free</span>
+        <span class="text-[11px] text-slate-400 font-mono">Model: Neural AI Engine</span>
         <button id="gen-btn" onclick="generateCustomScenario()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2">
           Generate Chunks
         </button>
@@ -975,7 +975,7 @@
       if (!topic) return;
 
       const genBtn = document.getElementById('gen-btn');
-      genBtn.innerText = 'Generating with Gemini...';
+      genBtn.innerText = 'Generating with AI...';
       genBtn.disabled = true;
 
       try {

@@ -21,7 +21,7 @@ Sistema de aprendizagem de inglês focado em **Aquisição Natural de Linguagem*
 | **Síntese de Voz (TTS)** | Web Speech Synthesis API nativa do sistema / navegador | **R$ 0,00** |
 | **Reconhecimento de Voz** | Web Speech Recognition API (Chrome/Edge/Safari) | **R$ 0,00** |
 | **Avaliação Fonética** | Comparador de distância Levenshtein com pesos de fonema em JS | **R$ 0,00** |
-| **Geração de Chunks/IA** | Google AI Studio (Gemini Flash Free-Tier) com fallback local | **R$ 0,00** |
+| **Geração de Chunks/IA** | LLM Cloud API (OpenAI Compatible) com fallback local | **R$ 0,00** |
 | **Servidor / Backend** | Node.js + Express enxuto | **R$ 0,00** |
 
 ---
@@ -63,7 +63,7 @@ natural-english-core/
 │   │   ├── fsrs.ts            # Implementação matemática canônica do FSRS v4.5
 │   │   └── test-fsrs.ts       # Validação e teste de curvas de esquecimento
 │   ├── services/
-│   │   ├── ai-content-generator.ts   # Integração com Gemini Free Tier
+│   │   ├── ai-content-generator.ts   # Integração com LLM Local/Cloud
 │   │   ├── session-orchestrator.ts   # Montagem dos 4 blocos de 20 minutos
 │   │   └── shadowing-evaluator.ts    # Métricas de acurácia, ritmo e fluência
 │   └── server.ts              # Servidor Express com rotas de API sincronizadas

@@ -30,7 +30,7 @@ app.get('/api/stories', async (req, res) => {
 
 /**
  * POST /api/generate-scenario
- * Gera um cenário imersivo via Gemini e persiste os novos chunks no SQLite
+ * Gera um cenário imersivo via AI e persiste os novos chunks no SQLite
  */
 app.post('/api/generate-scenario', async (req, res) => {
   try {

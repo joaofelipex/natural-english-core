@@ -9,7 +9,6 @@
     "test:fsrs": "tsx src/fsrs/test-fsrs.ts"
   },
   "dependencies": {
-    "@google/genai": "^2.27.0",
     "@prisma/client": "^5.20.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",

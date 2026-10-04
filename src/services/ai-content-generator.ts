@@ -1,5 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
-
 export interface GeneratedChunk {
   phrase: string;
   ipa: string;
@@ -12,20 +10,26 @@ export interface GeneratedChunk {
 export interface GeneratedScenarioImmersion {
   scenarioTitle: string;
   targetCefr: string;
-  contextSummary: string; // Explicado em inglês simples
-  miniStoryText: string;  // Mini-história (Input i+1)
+  contextSummary: string;
+  miniStoryText: string;
   keyChunks: GeneratedChunk[];
 }
 
 export class AiContentGeneratorService {
-  private ai: GoogleGenAI;
+  private apiKey: string;
+  private apiUrl: string;
+  private modelName: string;
 
-  constructor(apiKey?: string) {
-    this.ai = new GoogleGenAI({ apiKey: apiKey || process.env.GEMINI_API_KEY || '' });
+  constructor() {
+    // Padrão Agnóstico (OpenAI-compatible API). 
+    // Pode ser facilmente trocado para Groq, Ollama local, ou OpenAI no arquivo .env
+    this.apiKey = process.env.LLM_API_KEY || '';
+    this.apiUrl = process.env.LLM_API_URL || 'https://api.openai.com/v1/chat/completions';
+    this.modelName = process.env.LLM_MODEL || 'gpt-4o-mini';
   }
 
   /**
-   * Gera um cenário imersivo e chunks léxicos sem tradução para o português.
+   * Gera um cenário imersivo agnóstico através de uma chamada REST padrão (Fetch)
    */
   public async generateScenario(topic: string, cefrLevel: string = 'B1'): Promise<GeneratedScenarioImmersion> {
     const prompt = `
@@ -60,19 +64,33 @@ Return ONLY a valid JSON object matching this schema:
 `;
 
     try {
-      const response = await this.ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
+      if (!this.apiKey) {
+        throw new Error("API Key not found, using fallback.");
+      }
+
+      const response = await fetch(this.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          model: this.modelName,
+          messages: [{ role: 'user', content: prompt }],
+          response_format: { type: "json_object" },
           temperature: 0.3
-        }
+        })
       });
 
-      const responseText = response.text || '{}';
+      if (!response.ok) {
+        throw new Error(`API response error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const responseText = data.choices[0].message.content || '{}';
       return JSON.parse(responseText) as GeneratedScenarioImmersion;
     } catch (error) {
-      console.warn("Gemini API direct call fallback (API key not provided or offline mock):", error);
+      console.warn("Using offline fallback mock for scenario generation:", error.message);
       return this.getFallbackMockScenario(topic, cefrLevel);
     }
   }
