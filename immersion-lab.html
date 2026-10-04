@@ -98,10 +98,13 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <!-- Meaning Concept Anchor (No translation) -->
-          <div class="w-full aspect-video bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col items-center justify-center p-6 text-center">
-            <div id="srs-icon" class="text-6xl mb-3">☕</div>
-            <div id="srs-intent" class="text-sm font-semibold text-slate-200">Takeaway packaging request</div>
-            <span class="text-[11px] text-slate-400 mt-1">Direct Mental Link (No Portuguese)</span>
+          <div class="w-full h-48 relative bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+            <img id="srs-image" class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay" src="" alt="Concept Image" />
+            <div class="relative z-10 flex flex-col items-center">
+              <div id="srs-icon" class="text-5xl mb-2 drop-shadow-md">☕</div>
+              <div id="srs-intent" class="text-sm font-semibold text-white drop-shadow-md bg-black/40 px-3 py-1 rounded-full">Takeaway packaging request</div>
+              <span class="text-[10px] text-slate-300 mt-2 bg-black/40 px-2 py-0.5 rounded-full">Direct Mental Link (No Translation)</span>
+            </div>
           </div>
 
           <!-- Question & Audio Prompt -->
@@ -502,6 +505,10 @@
       document.getElementById('srs-phrase').innerText = `"${c.phrase}"`;
       document.getElementById('srs-ipa').innerText = c.ipa;
       document.getElementById('srs-pattern-note').innerHTML = `<strong>Formulaic Pattern:</strong> ${c.note}`;
+      
+      // Request free image matching the concept (Zero API Key needed)
+      const imagePrompt = encodeURIComponent(c.meaning + ", realistic photography, minimal");
+      document.getElementById('srs-image').src = `https://image.pollinations.ai/prompt/${imagePrompt}?nologo=true&width=600&height=300`;
       
       // Reset reveal box
       document.getElementById('srs-revealed-box').classList.add('hidden');
