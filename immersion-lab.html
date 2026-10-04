@@ -1,1052 +1,1818 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Natural English Acquisition - Complete Daily Immersion</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Natural English Core — Immersion Lab</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @keyframes pulse-ring {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 0.4; }
-      100% { transform: scale(0.95); opacity: 0.8; }
+    /* ── Base & Background ── */
+    * { box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a0a1a 0%, #0d0d2b 50%, #0a0a1a 100%);
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #e2e8f0;
+      overflow-x: hidden;
     }
-    .recording-pulse {
-      animation: pulse-ring 1.5s infinite ease-in-out;
+
+    /* ── Animated Gradient Orbs ── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+      animation: orbFloat 12s ease-in-out infinite;
     }
-    .word-highlight {
-      color: #38bdf8;
-      text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
-      transform: scale(1.05);
-      display: inline-block;
-      transition: all 0.12s ease-out;
+    .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #7c3aed, #4f46e5); top: -120px; left: -120px; animation-delay: 0s; }
+    .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #06b6d4, #3b82f6); bottom: -100px; right: -100px; animation-delay: 3s; }
+    .orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, #8b5cf6, #ec4899); top: 40%; left: 60%; animation-delay: 6s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(30px, -30px) scale(1.05); }
+      66%       { transform: translate(-20px, 20px) scale(0.95); }
     }
+
+    /* ── Glassmorphism Cards ── */
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 1rem;
+    }
+    .glass-strong {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1.25rem;
+    }
+
+    /* ── 3D Flip Card ── */
+    .flip-card { perspective: 1000px; cursor: pointer; }
+    .flip-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-card-front,
+    .flip-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      position: absolute;
+      width: 100%;
+      top: 0; left: 0;
+    }
+    .flip-card-back { transform: rotateY(180deg); }
+
+    /* ── Stage Transition ── */
+    .stage-panel {
+      display: none;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .stage-panel.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Progress Steps ── */
+    .step-dot {
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.04);
+      transition: all 0.35s ease;
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+    }
+    .step-dot.done   { background: linear-gradient(135deg,#7c3aed,#4f46e5); border-color: #7c3aed; }
+    .step-dot.active { background: linear-gradient(135deg,#8b5cf6,#6366f1); border-color: #8b5cf6; box-shadow: 0 0 16px rgba(139,92,246,0.6); }
+    .step-line {
+      flex: 1; height: 2px;
+      background: rgba(255,255,255,0.08);
+      position: relative;
+    }
+    .step-line .fill {
+      position: absolute; top: 0; left: 0; height: 100%;
+      background: linear-gradient(90deg,#7c3aed,#4f46e5);
+      transition: width 0.5s ease;
+    }
+
+    /* ── Waveform Canvas ── */
+    #waveformCanvas {
+      border-radius: 0.75rem;
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* ── Word Order Pills ── */
+    .word-pill {
+      display: inline-flex; align-items: center;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(139,92,246,0.18);
+      border: 1px solid rgba(139,92,246,0.45);
+      color: #c4b5fd;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+    }
+    .word-pill:hover { background: rgba(139,92,246,0.35); border-color: #8b5cf6; color: #fff; transform: scale(1.05); }
+    .word-pill.used  { opacity: 0.3; pointer-events: none; }
+    .word-pill-answer {
+      display: inline-flex; align-items: center;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      background: rgba(99,102,241,0.22);
+      border: 1px solid rgba(99,102,241,0.5);
+      color: #a5b4fc;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+    }
+    .word-pill-answer:hover { background: rgba(239,68,68,0.2); border-color: #f87171; color: #fca5a5; }
+
+    /* ── Animations ── */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-10px); }
+      40%      { transform: translateX(10px); }
+      60%      { transform: translateX(-6px); }
+      80%      { transform: translateX(6px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    @keyframes pop-in {
+      0%   { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .pop-in { animation: pop-in 0.2s ease forwards; }
+
+    @keyframes glow-green {
+      0%,100% { box-shadow: 0 0 0 rgba(52,211,153,0); }
+      50%      { box-shadow: 0 0 30px rgba(52,211,153,0.6); }
+    }
+    .glow-green { animation: glow-green 0.6s ease; }
+
+    @keyframes glow-red {
+      0%,100% { box-shadow: 0 0 0 rgba(239,68,68,0); }
+      50%      { box-shadow: 0 0 30px rgba(239,68,68,0.6); }
+    }
+    .glow-red { animation: glow-red 0.5s ease; }
+
+    @keyframes fadeInUp {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+
+    @keyframes confetti-burst {
+      0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+      100% { transform: scale(2.5) rotate(360deg); opacity: 0; }
+    }
+    .confetti-burst { animation: confetti-burst 0.7s ease forwards; }
+
+    @keyframes karaoke-pulse {
+      0%,100% { color: #fff; text-shadow: none; }
+      50%      { color: #a78bfa; text-shadow: 0 0 10px rgba(167,139,250,0.7); }
+    }
+    .karaoke-word { transition: all 0.2s ease; }
+    .karaoke-word.active {
+      color: #a78bfa;
+      text-shadow: 0 0 12px rgba(167,139,250,0.8);
+      font-weight: 700;
+    }
+
+    /* ── Rating Buttons ── */
+    .rating-btn {
+      flex: 1;
+      padding: 0.6rem 0.5rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .rating-1 { background: rgba(239,68,68,0.15); color: #f87171; border-color: rgba(239,68,68,0.35); }
+    .rating-1:hover { background: rgba(239,68,68,0.30); border-color: #f87171; }
+    .rating-2 { background: rgba(251,146,60,0.15); color: #fb923c; border-color: rgba(251,146,60,0.35); }
+    .rating-2:hover { background: rgba(251,146,60,0.30); border-color: #fb923c; }
+    .rating-3 { background: rgba(52,211,153,0.15); color: #34d399; border-color: rgba(52,211,153,0.35); }
+    .rating-3:hover { background: rgba(52,211,153,0.30); border-color: #34d399; }
+    .rating-4 { background: rgba(99,102,241,0.15); color: #818cf8; border-color: rgba(99,102,241,0.35); }
+    .rating-4:hover { background: rgba(99,102,241,0.30); border-color: #818cf8; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.4); border-radius: 3px; }
+
+    /* ── Input ── */
+    .gap-input {
+      background: rgba(255,255,255,0.06);
+      border: 2px solid rgba(139,92,246,0.35);
+      border-radius: 0.75rem;
+      color: #fff;
+      font-size: 1.1rem;
+      padding: 0.75rem 1rem;
+      width: 100%;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+    }
+    .gap-input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
+    .gap-input.correct { border-color: #34d399; box-shadow: 0 0 0 3px rgba(52,211,153,0.2); }
+    .gap-input.incorrect { border-color: #f87171; box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }
+
+    /* ── Gradient text ── */
+    .grad-text { background: linear-gradient(135deg, #a78bfa, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .grad-text-emerald { background: linear-gradient(135deg, #34d399, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    /* ── Timer arc ── */
+    .timer-ring { transition: stroke-dashoffset 1s linear; }
+
+    /* ── Story card hover ── */
+    .story-card { transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.08); }
+    .story-card:hover { border-color: rgba(139,92,246,0.5); background: rgba(139,92,246,0.1); transform: translateY(-2px); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
+<body class="relative">
 
-  <!-- Header -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-sky-400 to-emerald-400 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-indigo-500/20">
-        N
+  <!-- Background Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ══════════════ HEADER ══════════════ -->
+  <header class="relative z-10 border-b border-white/5" style="background:rgba(10,10,26,0.7);backdrop-filter:blur(20px);">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">🧠</div>
+        <div>
+          <div class="text-sm font-bold grad-text">Natural English Core</div>
+          <div class="text-xs text-white/40">Immersion Lab</div>
+        </div>
       </div>
-      <div>
-        <h1 class="text-base font-bold text-slate-100 flex items-center gap-2">
-          Natural English Immersion Lab
-          <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">20-Min Daily Session</span>
-        </h1>
-        <p class="text-xs text-slate-400">Stephen Krashen's Input + Lexical Chunks + FSRS Scheduler</p>
-      </div>
-    </div>
-    
-    <div class="flex items-center space-x-2 text-xs">
-      <button onclick="openStoriesModal()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg flex items-center gap-1.5 transition font-semibold">
-        <span>📚</span> Story Library (Offline)
-      </button>
-      <button onclick="openScenarioModal()" class="px-3.5 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 rounded-lg flex items-center gap-1.5 transition font-semibold">
-        <span>✨</span> AI Custom Topic
-      </button>
-      <div class="hidden sm:flex items-center space-x-3 border-l border-slate-800 pl-3">
-        <span class="text-slate-400" id="stat-cards">SRS Cards: <strong class="text-white">5</strong></span>
-        <span class="text-slate-400" id="stat-mastered">Mastered: <strong class="text-emerald-400">0</strong></span>
+
+      <div class="flex items-center gap-3">
+        <!-- Stats -->
+        <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-xl">
+          <span class="text-xs text-white/50">Due</span>
+          <span id="headerDue" class="text-sm font-bold text-violet-400">0</span>
+        </div>
+        <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-xl">
+          <span class="text-xs text-white/50">Mastered</span>
+          <span id="headerMastered" class="text-sm font-bold text-emerald-400">0</span>
+        </div>
+        <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-xl">
+          <span class="text-xs text-white/50">🔥</span>
+          <span id="headerStreak" class="text-sm font-bold text-orange-400">0</span>
+        </div>
+
+        <!-- Library Button -->
+        <button onclick="openLibrary()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium text-white/80 hover:text-white transition-all" style="background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(79,70,229,0.3));border:1px solid rgba(139,92,246,0.4);">
+          📚 Library
+        </button>
+
+        <!-- AI Topic Button -->
+        <button onclick="openAIModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium text-white/80 hover:text-white transition-all" style="background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(59,130,246,0.2));border:1px solid rgba(6,182,212,0.3);">
+          ✨ AI Topic
+        </button>
       </div>
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
-    
-    <!-- 4-Stage Navigation / Daily Routine Pipeline -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-      <div class="flex justify-between items-center text-xs font-semibold text-slate-400">
-        <span id="stage-badge" class="text-indigo-400 font-mono uppercase tracking-wider">STAGE 1 OF 4</span>
-        <span id="stage-timer-info" class="text-slate-300">Daily Goal: 20 Minutes Total</span>
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="relative z-10 max-w-5xl mx-auto px-4 py-6">
+
+    <!-- ── Progress Steps Bar ── -->
+    <div class="glass mb-6 p-4 rounded-2xl">
+      <div class="flex items-center justify-between">
+
+        <!-- Step 1 -->
+        <div class="flex flex-col items-center gap-1">
+          <div id="step-dot-1" class="step-dot active">🃏</div>
+          <span class="text-xs text-white/40 hidden sm:block">SRS Cards</span>
+          <span class="text-xs text-white/30 hidden sm:block">6 min</span>
+        </div>
+        <div class="step-line"><div id="line-1-2" class="fill" style="width:0%"></div></div>
+
+        <!-- Step 2 -->
+        <div class="flex flex-col items-center gap-1">
+          <div id="step-dot-2" class="step-dot">📖</div>
+          <span class="text-xs text-white/40 hidden sm:block">Input i+1</span>
+          <span class="text-xs text-white/30 hidden sm:block">8 min</span>
+        </div>
+        <div class="step-line"><div id="line-2-3" class="fill" style="width:0%"></div></div>
+
+        <!-- Step 3 -->
+        <div class="flex flex-col items-center gap-1">
+          <div id="step-dot-3" class="step-dot">🎙️</div>
+          <span class="text-xs text-white/40 hidden sm:block">Shadowing</span>
+          <span class="text-xs text-white/30 hidden sm:block">4 min</span>
+        </div>
+        <div class="step-line"><div id="line-3-4" class="fill" style="width:0%"></div></div>
+
+        <!-- Step 4 -->
+        <div class="flex flex-col items-center gap-1">
+          <div id="step-dot-4" class="step-dot">✏️</div>
+          <span class="text-xs text-white/40 hidden sm:block">Fill Gap</span>
+          <span class="text-xs text-white/30 hidden sm:block">4 min</span>
+        </div>
+        <div class="step-line"><div id="line-4-5" class="fill" style="width:0%"></div></div>
+
+        <!-- Step 5 -->
+        <div class="flex flex-col items-center gap-1">
+          <div id="step-dot-5" class="step-dot">🧩</div>
+          <span class="text-xs text-white/40 hidden sm:block">Word Order</span>
+          <span class="text-xs text-white/30 hidden sm:block">4 min</span>
+        </div>
+        <div class="step-line"><div id="line-5-6" class="fill" style="width:0%"></div></div>
+
+        <!-- Step 6 -->
+        <div class="flex flex-col items-center gap-1">
+          <div id="step-dot-6" class="step-dot">🏆</div>
+          <span class="text-xs text-white/40 hidden sm:block">Anchor</span>
+          <span class="text-xs text-white/30 hidden sm:block">2 min</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         STAGE 1 — Visual SRS Flashcard
+    ════════════════════════════════════════ -->
+    <div id="stage-1" class="stage-panel active">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl font-bold grad-text">🃏 Visual SRS Flashcards</h2>
+        <p class="text-white/50 text-sm mt-1">Tap the card to reveal IPA & meaning</p>
       </div>
 
-      <!-- Stage Buttons -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <button onclick="switchStage(1)" id="tab-stage-1" class="px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition bg-indigo-600 border-indigo-500 text-white">
-          <div class="text-[10px] opacity-75">Step 1 (6 min)</div>
-          <div>1. Visual SRS Flashcards</div>
-        </button>
-        <button onclick="switchStage(2)" id="tab-stage-2" class="px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition bg-slate-800/80 border-slate-700 text-slate-400 hover:text-white">
-          <div class="text-[10px] opacity-75">Step 2 (8 min)</div>
-          <div>2. Comprehensible Input i+1</div>
-        </button>
-        <button onclick="switchStage(3)" id="tab-stage-3" class="px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition bg-slate-800/80 border-slate-700 text-slate-400 hover:text-white">
-          <div class="text-[10px] opacity-75">Step 3 (4 min)</div>
-          <div>3. Active Shadowing</div>
-        </button>
-        <button onclick="switchStage(4)" id="tab-stage-4" class="px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition bg-slate-800/80 border-slate-700 text-slate-400 hover:text-white">
-          <div class="text-[10px] opacity-75">Step 4 (2 min)</div>
-          <div>4. Consolidation & Anchor</div>
+      <!-- Card Queue Info -->
+      <div class="flex justify-center gap-4 mb-5">
+        <div class="glass px-4 py-2 rounded-xl text-center">
+          <div class="text-xs text-white/40 mb-0.5">Remaining</div>
+          <div id="s1-remaining" class="text-lg font-bold text-violet-400">6</div>
+        </div>
+        <div class="glass px-4 py-2 rounded-xl text-center">
+          <div class="text-xs text-white/40 mb-0.5">Reviewed</div>
+          <div id="s1-reviewed" class="text-lg font-bold text-emerald-400">0</div>
+        </div>
+        <div class="glass px-4 py-2 rounded-xl text-center">
+          <div class="text-xs text-white/40 mb-0.5">Session</div>
+          <div class="text-lg font-bold text-indigo-400" id="s1-timer">6:00</div>
+        </div>
+      </div>
+
+      <!-- 3D Flip Card -->
+      <div class="flex justify-center mb-6">
+        <div id="flashcard" class="flip-card w-full max-w-lg" style="height:340px;" onclick="flipCard()">
+          <div class="flip-card-inner w-full" style="height:340px;">
+
+            <!-- FRONT -->
+            <div class="flip-card-front glass-strong p-6 flex flex-col items-center justify-center" style="height:340px;">
+              <div id="card-icon" class="text-5xl mb-3">📈</div>
+              <div id="card-scenario" class="text-xs text-white/40 uppercase tracking-widest mb-3">Morning Market Briefing</div>
+              <div id="card-phrase" class="text-3xl font-bold text-center text-white mb-3">taking a hit</div>
+              <div id="card-image-wrap" class="w-full rounded-xl overflow-hidden mt-2" style="height:100px;background:rgba(0,0,0,0.3);">
+                <img id="card-image" src="/assets/images/market_hit.jpg" alt="" class="w-full h-full object-cover opacity-60" onerror="this.style.display='none'" />
+              </div>
+              <div class="mt-4 flex items-center gap-2 text-white/30 text-xs">
+                <span>👆 tap to flip</span>
+              </div>
+            </div>
+
+            <!-- BACK -->
+            <div class="flip-card-back glass-strong p-6 flex flex-col items-center justify-center" style="height:340px;background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(79,70,229,0.10));">
+              <div id="card-ipa" class="text-violet-300 text-xl font-mono mb-2">/ˈteɪ.kɪŋ ə hɪt/</div>
+              <div id="card-meaning" class="text-white/80 text-center text-lg mb-3">Describing a sudden loss in value</div>
+              <div id="card-note" class="text-white/50 text-sm italic text-center mb-4">[ASSET] is taking a hit</div>
+              <div id="card-desc" class="text-white/30 text-xs text-center">Investment committee meeting.</div>
+
+              <!-- FSRS Rating Buttons -->
+              <div class="flex gap-2 w-full mt-5">
+                <button class="rating-btn rating-1" onclick="rateCard(1,event)">Again<br><span class="font-normal normal-case text-xs opacity-70">&lt;1d</span></button>
+                <button class="rating-btn rating-2" onclick="rateCard(2,event)">Hard<br><span class="font-normal normal-case text-xs opacity-70">3d</span></button>
+                <button class="rating-btn rating-3" onclick="rateCard(3,event)">Good<br><span class="font-normal normal-case text-xs opacity-70">7d</span></button>
+                <button class="rating-btn rating-4" onclick="rateCard(4,event)">Easy<br><span class="font-normal normal-case text-xs opacity-70">14d</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Stage Button -->
+      <div class="flex justify-center">
+        <button onclick="goToStage(2)" class="px-8 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+          Continue to Input i+1 →
         </button>
       </div>
     </div>
 
-    <!-- ============================================================== -->
-    <!-- STAGE 1: Visual & Auditory SRS Flashcard (Cold Retrieval)       -->
-    <!-- ============================================================== -->
-    <div id="stage-1-container" class="space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-7 shadow-xl space-y-6">
-        <div class="flex justify-between items-center text-xs">
-          <span class="px-2.5 py-1 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
-            Auditory & Visual Memory Retrieval
-          </span>
-          <span class="text-slate-400" id="srs-card-idx">Card 1 of 5</span>
-        </div>
+    <!-- ════════════════════════════════════════
+         STAGE 2 — Comprehensible Input i+1
+    ════════════════════════════════════════ -->
+    <div id="stage-2" class="stage-panel">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl font-bold grad-text">📖 Comprehensible Input i+1</h2>
+        <p class="text-white/50 text-sm mt-1">Read along — chunks are highlighted as you listen</p>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-          <!-- Meaning Concept Anchor (No translation) -->
-          <div class="w-full h-48 relative bg-black rounded-xl border border-slate-800 flex flex-col items-center justify-center p-6 text-center overflow-hidden shadow-inner">
-            <img id="srs-image" class="absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-1000" src="" alt="Concept Image" />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
-            <div class="relative z-10 flex flex-col items-center">
-              <div id="srs-icon" class="text-4xl mb-1 drop-shadow-lg">☕</div>
-              <div id="srs-intent" class="text-base font-bold text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] bg-black/60 px-4 py-1.5 rounded-lg border border-white/10 mt-1">Takeaway packaging request</div>
-            </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Story Image & Info -->
+        <div class="glass-strong p-4 flex flex-col gap-3">
+          <div class="rounded-xl overflow-hidden" style="height:160px;background:rgba(0,0,0,0.4);">
+            <img id="s2-cover" src="/assets/images/market_hit.jpg" alt="" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'" />
           </div>
-
-          <!-- Question & Audio Prompt -->
-          <div class="space-y-4">
-            <p class="text-xs text-slate-400">
-              Listen to the native audio and recall the complete formulaic chunk before revealing:
-            </p>
-            
-            <button onclick="playSrsAudio()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-100 rounded-xl font-semibold flex items-center justify-center gap-2 transition text-sm">
-              <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
-              Listen Prompt Audio (Zero Translation)
-            </button>
-
-            <button id="reveal-btn" onclick="revealSrsCard()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold transition text-sm">
-              Reveal Answer & Structure
-            </button>
-          </div>
-        </div>
-
-        <!-- Revealed Answer Area -->
-        <div id="srs-revealed-box" class="hidden border-t border-slate-800 pt-6 space-y-4">
           <div>
-            <div class="text-xs font-mono text-emerald-400 mb-1">Target Formulaic Chunk:</div>
-            <h2 id="srs-phrase" class="text-2xl font-bold text-white">"Could I get that to go, please?"</h2>
-            <div id="srs-ipa" class="text-xs font-mono text-indigo-300 mt-1">/kʊd aɪ ɡɛt ðæt tuː ɡoʊ pliːz/</div>
+            <div id="s2-title" class="font-bold text-white text-base">Morning Market Briefing</div>
+            <div id="s2-context" class="text-white/50 text-xs mt-1">Discussing market volatility during a morning investment committee meeting.</div>
           </div>
-
-          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300" id="srs-pattern-note">
-            <strong>Collocation Pattern:</strong> Could I get [ITEM] to go, please?
+          <div class="flex gap-2">
+            <button id="s2-play-btn" onclick="toggleStoryPlayback()" class="flex-1 py-2 rounded-lg text-sm font-medium text-white transition-all" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+              ▶ Play Story
+            </button>
+            <button onclick="stopStory()" class="px-3 py-2 rounded-lg text-sm text-white/60 hover:text-white glass transition-all">⏹</button>
           </div>
+          <!-- Timer -->
+          <div class="text-center text-white/40 text-xs mt-auto" id="s2-timer">8:00</div>
+        </div>
 
-          <!-- FSRS Feedback continuum -->
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-            <span class="text-xs text-slate-400">How easily did your mind evoke the sound & concept?</span>
-            <div class="flex items-center space-x-2">
-              <button onclick="submitSrsReview(1)" class="px-3 py-2 bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 rounded-lg text-xs font-semibold border border-slate-700 transition">
-                Again (1)
-              </button>
-              <button onclick="submitSrsReview(2)" class="px-3 py-2 bg-slate-800 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 rounded-lg text-xs font-semibold border border-slate-700 transition">
-                Hard (2)
-              </button>
-              <button onclick="submitSrsReview(3)" class="px-3 py-2 bg-slate-800 hover:bg-indigo-500/20 text-slate-300 hover:text-indigo-400 rounded-lg text-xs font-semibold border border-slate-700 transition">
-                Good (3)
-              </button>
-              <button onclick="submitSrsReview(4)" class="px-3 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-lg text-xs font-semibold border border-emerald-500/30 transition">
-                Easy (4)
-              </button>
-            </div>
+        <!-- Story Text -->
+        <div class="lg:col-span-2 glass-strong p-5 flex flex-col gap-4">
+          <div id="s2-text" class="text-white/90 text-lg leading-relaxed"></div>
+
+          <!-- Chunks List -->
+          <div class="border-t border-white/10 pt-3">
+            <div class="text-xs text-white/40 uppercase tracking-widest mb-2">Key Chunks in This Story</div>
+            <div id="s2-chunks" class="flex flex-wrap gap-2"></div>
           </div>
         </div>
       </div>
+
+      <div class="flex justify-center mt-5 gap-3">
+        <button onclick="goToStage(1)" class="px-6 py-2.5 rounded-xl font-medium text-white/60 hover:text-white glass text-sm transition-all">← Back</button>
+        <button onclick="goToStage(3)" class="px-8 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+          Continue to Shadowing →
+        </button>
+      </div>
     </div>
 
-    <!-- ============================================================== -->
-    <!-- STAGE 2: Comprehensible Input (i+1 Immersion Mini-Story)       -->
-    <!-- ============================================================== -->
-    <div id="stage-2-container" class="hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-7 shadow-xl space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-          <div>
-            <span class="text-xs font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-              Input Compreensível i+1
-            </span>
-            <h2 id="story-title" class="text-xl font-bold text-white mt-1">Tech Standup & Cloud Outage</h2>
-          </div>
-          <div class="flex items-center space-x-2">
-            <button onclick="toggleStoryText()" id="story-mode-toggle" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-semibold transition text-slate-300">
-              👁️ Hide Text (Pure Listening)
-            </button>
-            <button onclick="playFullStoryAudio()" id="story-play-btn" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/20">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
-              Play Story
-            </button>
-          </div>
+    <!-- ════════════════════════════════════════
+         STAGE 3 — Active Shadowing
+    ════════════════════════════════════════ -->
+    <div id="stage-3" class="stage-panel">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl font-bold grad-text">🎙️ Active Shadowing</h2>
+        <p class="text-white/50 text-sm mt-1">Listen, then repeat — we'll score your accuracy</p>
+      </div>
+
+      <div class="glass-strong p-6 mb-4">
+        <!-- Current Chunk -->
+        <div class="text-center mb-5">
+          <div id="s3-chunk-phrase" class="text-3xl font-bold text-white mb-2">taking a hit</div>
+          <div id="s3-chunk-ipa" class="text-violet-300 font-mono text-base">/ˈteɪ.kɪŋ ə hɪt/</div>
+          <div id="s3-chunk-meaning" class="text-white/50 text-sm mt-1">Describing a sudden loss in value</div>
         </div>
 
-        <!-- Story Cover Image -->
-        <div class="w-full h-40 rounded-xl overflow-hidden border border-slate-800 relative mb-2">
-          <img id="story-cover-image" src="/assets/images/default.jpg" alt="Story Scene" class="w-full h-full object-cover opacity-70 transition-opacity duration-700" />
-          <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent pointer-events-none"></div>
-        </div>
+        <!-- Waveform Canvas -->
+        <canvas id="waveformCanvas" width="600" height="80" class="w-full mb-4"></canvas>
 
-        <div class="p-4 bg-slate-950/70 border border-slate-800 rounded-xl">
-          <div class="text-[11px] font-mono uppercase text-slate-400 mb-1">Context Blueprint:</div>
-          <p id="story-context" class="text-xs text-slate-300 leading-relaxed">
-            Alex joined the standup meeting right before kickoff to align with his team about an incident.
-          </p>
-        </div>
-
-        <!-- The Mini Story Text with interactive word highlight -->
-        <div id="story-text-wrapper" class="p-6 bg-slate-950 rounded-xl border border-slate-800">
-          <p id="story-paragraph" class="text-base sm:text-lg text-slate-200 leading-relaxed font-serif">
-            <!-- Words dynamically highlighted during audio -->
-          </p>
-        </div>
-
-        <!-- Focus Chunks in Story -->
-        <div>
-          <div class="text-xs font-semibold text-slate-400 mb-2">Key Growth Chunks in this story (The 10-15% i+1):</div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="story-chunks-list">
-            <!-- Populated via script -->
-          </div>
-        </div>
-
-        <div class="flex justify-end pt-2">
-          <button onclick="switchStage(3)" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
-            Proceed to Active Shadowing →
+        <!-- Controls -->
+        <div class="flex justify-center gap-3 mb-4">
+          <button onclick="playChunkTTS()" class="px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-all hover:opacity-90" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">
+            🔊 Listen
+          </button>
+          <button id="recordBtn" onclick="toggleRecording()" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all" style="background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.1));border:1px solid rgba(239,68,68,0.4);color:#f87171;">
+            🎙 Record
+          </button>
+          <button onclick="skipShadowChunk()" class="px-5 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white glass transition-all">
+            Skip →
           </button>
         </div>
+
+        <!-- Score -->
+        <div id="s3-score-wrap" class="hidden text-center py-3 rounded-xl" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);">
+          <div id="s3-score-label" class="text-emerald-400 font-bold text-lg"></div>
+          <div id="s3-recognized" class="text-white/50 text-sm mt-1"></div>
+        </div>
+      </div>
+
+      <!-- Progress dots -->
+      <div class="flex justify-center gap-2 mb-4">
+        <div id="s3-dots" class="flex gap-2"></div>
+      </div>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="goToStage(2)" class="px-6 py-2.5 rounded-xl font-medium text-white/60 hover:text-white glass text-sm transition-all">← Back</button>
+        <button onclick="goToStage(4)" class="px-8 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+          Continue to Fill-the-Gap →
+        </button>
       </div>
     </div>
 
-    <!-- ============================================================== -->
-    <!-- STAGE 3: Active Muscle Memory & Shadowing (Speaking)            -->
-    <!-- ============================================================== -->
-    <div id="stage-3-container" class="hidden space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- Context Column -->
-        <div class="md:col-span-1 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
-          <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Real-world Context</div>
-            <h3 id="scenario-title" class="text-lg font-bold text-white mb-2">Daily Life</h3>
-            <p id="scenario-desc" class="text-xs text-slate-300 leading-relaxed mb-6">
-              Real interaction without grammar distraction.
-            </p>
-            
-            <div class="w-full h-40 rounded-xl overflow-hidden border border-slate-700/50 relative group">
-              <img id="visual-image" src="/assets/images/default.jpg" alt="Scene" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              <div class="absolute inset-0 bg-black/30 flex flex-col items-end justify-end p-3">
-                <span id="visual-icon" class="text-3xl drop-shadow-md">☕</span>
-                <span id="visual-meaning" class="text-[10px] font-semibold text-white/90 bg-black/50 px-2 py-0.5 rounded mt-1">Takeaway Cup & Walking</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-400">
-            💡 <strong>Shadowing:</strong> Overlap speech immediately with the native cadence.
-          </div>
-        </div>
-
-        <!-- Shadowing Interactive Core -->
-        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-7 flex flex-col justify-between space-y-6 shadow-2xl">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
-                Formulaic Chunk
-              </span>
-              
-              <div class="flex items-center space-x-2 text-xs">
-                <span class="text-slate-400">Speed:</span>
-                <button onclick="setSpeed(0.75)" id="speed-075" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono">0.75x</button>
-                <button onclick="setSpeed(0.9)" id="speed-09" class="px-2 py-0.5 bg-indigo-600 text-white rounded font-mono">0.9x</button>
-                <button onclick="setSpeed(1.0)" id="speed-10" class="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono">1.0x</button>
-              </div>
-            </div>
-            
-            <h2 id="chunk-phrase-container" class="text-2xl md:text-3xl font-bold tracking-tight text-white mt-3 min-h-[4rem] leading-snug">
-              <!-- Words injected for sync karaoke -->
-            </h2>
-
-            <div id="chunk-ipa" class="text-sm font-mono text-indigo-300 mt-2">
-              /kʊd aɪ ɡɛt ðæt tuː ɡoʊ/
-            </div>
-
-            <div class="mt-4 p-3.5 bg-slate-800/60 rounded-xl border border-slate-700/60 text-xs text-slate-300 flex items-start gap-2.5">
-              <span class="text-base leading-none">🔗</span>
-              <div id="chunk-note">
-                <strong class="text-white">Connected Speech:</strong> Smooth connection without harsh stops.
-              </div>
-            </div>
-          </div>
-
-          <!-- Canvas Live Waveform -->
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800/80">
-            <div class="text-[10px] text-slate-400 uppercase tracking-widest font-mono mb-2 flex justify-between">
-              <span>Live Microphone Waveform</span>
-              <span id="audio-status" class="text-emerald-400">Ready</span>
-            </div>
-            <canvas id="waveform-canvas" class="w-full h-12 rounded-lg bg-slate-900/60 border border-slate-800"></canvas>
-          </div>
-
-          <!-- Controls -->
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="playNativeAudio()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl flex items-center gap-2 text-xs font-semibold border border-slate-700 transition">
-                <svg class="w-4 h-4 text-sky-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/></svg>
-                Listen Cadence
-              </button>
-              <button id="mic-btn" onclick="toggleSpeechRecognition()" class="flex-1 sm:flex-initial px-5 py-3 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-semibold rounded-xl flex items-center justify-center gap-3 transition shadow-lg shadow-indigo-600/30 text-xs">
-                <span class="w-2.5 h-2.5 rounded-full bg-red-400" id="mic-dot"></span>
-                <span id="mic-text">Hold to Shadow</span>
-              </button>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <button onclick="nextShadowingCard()" class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition">
-                Next Chunk →
-              </button>
-            </div>
-          </div>
-
-          <!-- Real-Time Evaluation Result -->
-          <div id="eval-result" class="hidden p-4 rounded-xl border space-y-2">
-            <div class="flex justify-between items-center text-xs font-bold" id="eval-header">
-              <span id="eval-score-text">Cadence Match: 95%</span>
-              <span id="eval-pace-badge" class="px-2 py-0.5 rounded text-[10px]">Natural Delivery</span>
-            </div>
-            <div class="text-xs text-slate-300">
-              <strong>Microphone Heard:</strong> "<span id="recognized-text" class="text-white"></span>"
-            </div>
-          </div>
-        </div>
+    <!-- ════════════════════════════════════════
+         STAGE 4 — Fill-the-Gap
+    ════════════════════════════════════════ -->
+    <div id="stage-4" class="stage-panel">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl font-bold grad-text">✏️ Fill-the-Gap</h2>
+        <p class="text-white/50 text-sm mt-1">Type the missing chunk to complete the sentence</p>
       </div>
-    </div>
 
-    <!-- ============================================================== -->
-    <!-- STAGE 4: Consolidation & SRS Ingestion (2 min)                  -->
-    <!-- ============================================================== -->
-    <div id="stage-4-container" class="hidden space-y-6">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-7 shadow-xl space-y-6">
-        <div>
-          <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/20">
-            Memory Consolidation
-          </span>
-          <h2 class="text-xl font-bold text-white mt-2">Anchor Today's New Chunks into your FSRS Queue</h2>
-          <p class="text-xs text-slate-300 mt-1">
-            Pick which formulaic expressions you want the FSRS algorithm to schedule for tomorrow's cold retrieval.
-          </p>
-        </div>
-
-        <div class="space-y-3" id="consolidation-chunks-list">
-          <!-- Injected via script -->
-        </div>
-
-        <div class="p-4 bg-emerald-950/40 border border-emerald-500/30 rounded-xl flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl">🎉</span>
-            <div>
-              <div class="text-xs font-bold text-emerald-400">Daily Session Completed!</div>
-              <div class="text-[11px] text-slate-300">20 minutes of natural language acquisition achieved.</div>
-            </div>
+      <div class="glass-strong p-6 mb-4">
+        <!-- Intent Hint -->
+        <div class="flex items-center gap-3 mb-5 p-3 rounded-xl" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);">
+          <span class="text-2xl" id="s4-icon">📈</span>
+          <div>
+            <div class="text-xs text-white/40 uppercase tracking-widest">Communicative Intent</div>
+            <div id="s4-intent" class="text-white/80 text-sm font-medium">Describing a sudden loss in value</div>
           </div>
-          <button onclick="finishSession()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-emerald-600/20">
-            Save & Finish
+        </div>
+
+        <!-- Gap Sentence -->
+        <div id="s4-sentence" class="text-xl text-white text-center leading-relaxed mb-6 font-medium">
+          Equities are <span class="text-violet-400 font-bold underline decoration-dotted">_____</span> due to the new inflation data.
+        </div>
+
+        <!-- Input -->
+        <div class="relative mb-3">
+          <input
+            id="gap-input"
+            type="text"
+            class="gap-input"
+            placeholder="Type the missing phrase…"
+            onkeydown="if(event.key==='Enter') checkGapAnswer()"
+          />
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-3 mb-4">
+          <button onclick="checkGapAnswer()" class="flex-1 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+            ✓ Check Answer
+          </button>
+          <button onclick="showGapHint()" class="px-4 py-2.5 rounded-xl text-sm text-white/60 hover:text-white glass transition-all">
+            💡 Hint
           </button>
         </div>
+
+        <!-- Feedback -->
+        <div id="s4-feedback" class="hidden text-center py-3 px-4 rounded-xl text-sm font-medium"></div>
+
+        <!-- Hint text -->
+        <div id="s4-hint" class="hidden text-center text-xs text-white/40 mt-2"></div>
+      </div>
+
+      <!-- Progress -->
+      <div class="flex justify-center gap-2 mb-4">
+        <div id="s4-progress" class="flex gap-2"></div>
+      </div>
+      <div class="text-center text-xs text-white/40 mb-4" id="s4-timer">4:00</div>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="goToStage(3)" class="px-6 py-2.5 rounded-xl font-medium text-white/60 hover:text-white glass text-sm transition-all">← Back</button>
+        <button onclick="goToStage(5)" class="px-8 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+          Continue to Word Order →
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         STAGE 5 — Word Order Challenge
+    ════════════════════════════════════════ -->
+    <div id="stage-5" class="stage-panel">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl font-bold grad-text">🧩 Word Order Challenge</h2>
+        <p class="text-white/50 text-sm mt-1">Tap the words in the correct order to rebuild the phrase</p>
+      </div>
+
+      <div class="glass-strong p-6 mb-4">
+        <!-- Chunk Context -->
+        <div class="flex items-center gap-3 mb-5 p-3 rounded-xl" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);">
+          <span class="text-2xl" id="s5-icon">📈</span>
+          <div>
+            <div class="text-xs text-white/40 uppercase tracking-widest">Rebuild this chunk</div>
+            <div id="s5-intent" class="text-white/80 text-sm font-medium">Describing a sudden loss in value</div>
+          </div>
+        </div>
+
+        <!-- Answer Area -->
+        <div class="text-xs text-white/40 uppercase tracking-widest mb-2">Your answer:</div>
+        <div id="s5-answer-area" class="min-h-12 mb-5 p-3 rounded-xl flex flex-wrap gap-2 items-center" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
+          <span id="s5-answer-placeholder" class="text-white/25 text-sm italic">Click words below…</span>
+        </div>
+
+        <!-- Word Pills -->
+        <div class="text-xs text-white/40 uppercase tracking-widest mb-2">Available words:</div>
+        <div id="s5-word-pool" class="flex flex-wrap gap-2 min-h-10 mb-4"></div>
+
+        <!-- Buttons -->
+        <div class="flex gap-3">
+          <button onclick="clearWordAnswer()" class="px-4 py-2.5 rounded-xl text-sm text-white/60 hover:text-white glass transition-all">
+            ↺ Clear
+          </button>
+          <button onclick="checkWordOrder()" class="flex-1 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+            ✓ Check Order
+          </button>
+          <button onclick="skipWordChunk()" class="px-4 py-2.5 rounded-xl text-sm text-white/60 hover:text-white glass transition-all">
+            Skip →
+          </button>
+        </div>
+
+        <!-- Feedback -->
+        <div id="s5-feedback" class="hidden mt-3 text-center py-2 px-4 rounded-xl text-sm font-medium"></div>
+      </div>
+
+      <!-- Progress -->
+      <div class="flex justify-center gap-2 mb-4">
+        <div id="s5-progress" class="flex gap-2"></div>
+      </div>
+      <div class="text-center text-xs text-white/40 mb-4" id="s5-timer">4:00</div>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="goToStage(4)" class="px-6 py-2.5 rounded-xl font-medium text-white/60 hover:text-white glass text-sm transition-all">← Back</button>
+        <button onclick="goToStage(6)" class="px-8 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+          Continue to Summary →
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         STAGE 6 — Consolidation & Anchor
+    ════════════════════════════════════════ -->
+    <div id="stage-6" class="stage-panel">
+      <div class="text-center mb-6">
+        <div class="text-5xl mb-3">🏆</div>
+        <h2 class="text-3xl font-bold grad-text">Session Complete!</h2>
+        <p class="text-white/50 text-sm mt-2">Here's your immersion summary</p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="glass-strong p-4 text-center">
+          <div class="text-3xl font-bold grad-text" id="s6-chunks">6</div>
+          <div class="text-xs text-white/40 mt-1">Chunks Reviewed</div>
+        </div>
+        <div class="glass-strong p-4 text-center">
+          <div class="text-3xl font-bold text-emerald-400" id="s6-accuracy">0%</div>
+          <div class="text-xs text-white/40 mt-1">Accuracy</div>
+        </div>
+        <div class="glass-strong p-4 text-center">
+          <div class="text-3xl font-bold text-orange-400" id="s6-streak">0🔥</div>
+          <div class="text-xs text-white/40 mt-1">Streak</div>
+        </div>
+        <div class="glass-strong p-4 text-center">
+          <div class="text-3xl font-bold text-indigo-400" id="s6-time">28</div>
+          <div class="text-xs text-white/40 mt-1">Min Immersed</div>
+        </div>
+      </div>
+
+      <!-- Chunks Reviewed List -->
+      <div class="glass p-5 mb-6 rounded-2xl">
+        <div class="text-xs text-white/40 uppercase tracking-widest mb-3">Chunks anchored today</div>
+        <div id="s6-chunk-list" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- Motivational Message -->
+      <div class="text-center py-4 px-6 rounded-2xl mb-6" style="background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(79,70,229,0.10));border:1px solid rgba(139,92,246,0.25);">
+        <div id="s6-message" class="text-white/80 text-base leading-relaxed"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-center gap-3 flex-wrap">
+        <button onclick="restartSession()" class="px-8 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);">
+          🔄 New Session
+        </button>
+        <button onclick="openLibrary()" class="px-8 py-3 rounded-xl font-semibold text-white/80 hover:text-white text-sm glass transition-all">
+          📚 Load Story
+        </button>
       </div>
     </div>
 
   </main>
 
-  <!-- Story Library Offline Modal -->
-  <div id="stories-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl max-h-[85vh] flex flex-col">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <span>📚</span> Curated Immersion Library (100% Offline)
-          </h3>
-          <p class="text-xs text-slate-400">Pre-built real-world situations with Krashen's i+1 input.</p>
-        </div>
-        <button onclick="closeStoriesModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+  <!-- ══════════════ STORY LIBRARY MODAL ══════════════ -->
+  <div id="library-modal" class="modal-overlay" onclick="if(event.target===this) closeLibrary()">
+    <div class="glass-strong w-full max-w-2xl mx-4 p-6 rounded-2xl max-h-[80vh] overflow-y-auto" style="position:relative;">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-xl font-bold text-white">📚 Story Library</h3>
+        <button onclick="closeLibrary()" class="text-white/40 hover:text-white text-xl transition-all">✕</button>
       </div>
 
-      <div class="space-y-3 overflow-y-auto pr-1 flex-1" id="curated-stories-list">
-        <!-- Injected via script -->
+      <div id="library-loading" class="text-center py-8 text-white/40">
+        <div class="text-3xl mb-2 animate-spin inline-block">⟳</div>
+        <div>Loading stories…</div>
       </div>
+
+      <div id="library-list" class="flex flex-col gap-3 hidden"></div>
     </div>
   </div>
 
-  <!-- Scenario Generator Modal -->
-  <div id="scenario-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center">
-        <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <span>✨</span> Generate Custom Immersion
-        </h3>
-        <button onclick="closeScenarioModal()" class="text-slate-400 hover:text-white">✕</button>
+  <!-- ══════════════ AI SCENARIO MODAL ══════════════ -->
+  <div id="ai-modal" class="modal-overlay" onclick="if(event.target===this) closeAIModal()">
+    <div class="glass-strong w-full max-w-lg mx-4 p-6 rounded-2xl" style="position:relative;">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-xl font-bold text-white">✨ Generate AI Scenario</h3>
+        <button onclick="closeAIModal()" class="text-white/40 hover:text-white text-xl transition-all">✕</button>
       </div>
-      <p class="text-xs text-slate-300">
-        Type any real situation you want to practice in English. The AI Engine will create natural chunks with IPA and zero translation.
-      </p>
-      <input id="custom-topic-input" type="text" placeholder="e.g., Explaining technical debt to management" class="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500">
-      
-      <div class="flex justify-between items-center pt-2">
-        <span class="text-[11px] text-slate-400 font-mono">Model: Neural AI Engine</span>
-        <button id="gen-btn" onclick="generateCustomScenario()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2">
-          Generate Chunks
-        </button>
+
+      <div class="mb-4">
+        <label class="text-xs text-white/50 uppercase tracking-widest block mb-2">Scenario Topic</label>
+        <input id="ai-topic-input" type="text" placeholder="e.g. job interview at a tech startup…"
+          class="gap-input" />
       </div>
+      <div class="mb-4">
+        <label class="text-xs text-white/50 uppercase tracking-widest block mb-2">Level</label>
+        <select id="ai-level-input" class="gap-input" style="cursor:pointer;">
+          <option value="B1">B1 — Intermediate</option>
+          <option value="B2" selected>B2 — Upper-Intermediate</option>
+          <option value="C1">C1 — Advanced</option>
+        </select>
+      </div>
+
+      <div id="ai-feedback" class="hidden mb-3 text-sm text-center text-white/60"></div>
+
+      <button onclick="generateAIScenario()" class="w-full py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90" style="background:linear-gradient(135deg,#06b6d4,#3b82f6);">
+        ✨ Generate Scenario
+      </button>
     </div>
   </div>
 
+  <!-- ══════════════ SCRIPT ══════════════ -->
   <script>
-    let currentStage = 1;
-    let backendCards = [];
-    let srsIndex = 0;
-    let shadowingIndex = 0;
-    let recognition = null;
-    let isListening = false;
-    let currentSpeed = 0.9;
-    let isStoryTextHidden = false;
-    let audioContext = null;
-    let analyser = null;
-    let micStream = null;
-    let animationFrameId = null;
+  'use strict';
 
-    // Mini Story Comprehensible Input Default
-    const defaultStory = {
-      title: "Async Software Standup",
-      context: "Alex joined the standup meeting a minute before kickoff to resolve a deployment blocker.",
-      text: "Alex joined the standup meeting a minute before kickoff. 'Hey everyone, I'm currently blocked on the pipeline deployment,' he mentioned. Sarah nodded and replied, 'Let's touch base right after this call to unblock you.' Alex smiled, 'Sounds like a plan. Does that make sense from your end?'",
-      chunks: [
-        { phrase: "I'm currently blocked on the pipeline.", intent: "Signaling impediment in a meeting", pattern: "I'm currently blocked on [X]" },
-        { phrase: "Let's touch base right after this call.", intent: "Scheduling quick sync right after an event", pattern: "Let's touch base [TIME]" },
-        { phrase: "Does that make sense from your end?", intent: "Polite alignment check", pattern: "Does that make sense from [PERSPECTIVE]?" }
-      ]
+  // ── Fallback Data ──────────────────────────────────────────────────────────
+  const fallbackChunks = [
+    { icon:'📈', meaning:'Describing a sudden loss in value',              phrase:'taking a hit',                     ipa:'/ˈteɪ.kɪŋ ə hɪt/',                    note:'[ASSET] is taking a hit',                  image:'/assets/images/market_hit.jpg', scenario:'Morning Market Briefing',     desc:'Investment committee meeting.' },
+    { icon:'💼', meaning:'Describing concentrated position in asset class', phrase:'heavily weighted in',               ipa:'/ˈhɛv.ə.li ˈweɪ.tɪd ɪn/',             note:'You are heavily weighted in [ASSET]',       image:'/assets/images/portfolio.jpg',  scenario:'Portfolio Review',            desc:'Wealth management client meeting.' },
+    { icon:'📊', meaning:'Referring to a company\'s forecasted performance', phrase:'forward guidance',                  ipa:'/ˈfɔːr.wərd ˈɡaɪ.dəns/',              note:'Their forward guidance was [ADJ]',          image:'/assets/images/earnings.jpg',   scenario:'Q3 Earnings Call',            desc:'Quarterly earnings analysis.' },
+    { icon:'☕', meaning:'Requesting takeout packaging politely',           phrase:'Could I get that to go, please?',   ipa:'/kʊd aɪ ɡɛt ðæt tuː ɡoʊ pliːz/',     note:'Could I get [ITEM] to go, please?',         image:'/assets/images/coffee.jpg',     scenario:'Corner Bakery',               desc:'Morning commute stop.' },
+    { icon:'🚦', meaning:'Clearly stating an obstacle in collaborative work',phrase:"I'm currently blocked on",          ipa:"/aɪm ˈkɜːr.ənt.li blɑːkt ɑːn/",      note:"I'm currently blocked on [IMPEDIMENT]",    image:'/assets/images/standup.jpg',    scenario:'Tech Standup',                desc:'Engineering team meeting.' },
+    { icon:'✈️', meaning:'Reassuring someone everything is verified',      phrase:"You're good to go!",                ipa:'/jʊr ɡʊd tuː ɡoʊ/',                   note:'You are good to [PROCEED]',                image:'/assets/images/airport.jpg',    scenario:'Airport Gate',                desc:'Tight layover connection.' }
+  ];
+
+  const gapSentences = [
+    { sentence: 'Equities are _____ due to the new inflation data.',                answer: 'taking a hit' },
+    { sentence: 'Your portfolio is _____ tech stocks right now.',                    answer: 'heavily weighted in' },
+    { sentence: 'Their _____ was weaker than the market expected.',                  answer: 'forward guidance' },
+    { sentence: '"_____" she asked with a smile at the counter.',                    answer: 'Could I get that to go, please?' },
+    { sentence: '"I am _____ the deployment pipeline," he said.',                    answer: "I'm currently blocked on" },
+    { sentence: '"Your ticket is confirmed. _____" said the agent.',                 answer: "You're good to go!" }
+  ];
+
+  let defaultStory = {
+    title: 'Morning Market Briefing',
+    image: '/assets/images/market_hit.jpg',
+    context: 'Discussing market volatility and portfolio strategy during a morning investment committee meeting.',
+    text: 'Good morning, everyone. As you saw in the pre-market, equities are taking a hit due to the new inflation data. We need to hedge our exposure immediately. I suggest we shift some capital into fixed income to weather the storm. Lets run the numbers and circle back before the closing bell.',
+    chunks: [
+      { phrase: 'taking a hit',              intent: 'Describing a sudden loss in value',         pattern: '[ASSET] is taking a hit',          image: '/assets/images/market_hit.jpg' },
+      { phrase: 'hedge our exposure',         intent: 'Proposing a defensive risk strategy',       pattern: 'We need to hedge our [RISK]',       image: '/assets/images/portfolio.jpg' },
+      { phrase: 'circle back before the bell',intent: 'Scheduling a follow-up before close',       pattern: 'Let us circle back before [DEADLINE]',image: '/assets/images/earnings.jpg' }
+    ]
+  };
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let currentStage       = 1;
+  let backendCards       = [];
+  let activeChunks       = [...fallbackChunks];
+  let currentCardIndex   = 0;
+  let isFlipped          = false;
+  let sessionStats       = { reviewed: 0, correct: 0, streak: 0, mastered: 0 };
+
+  // Stage 2
+  let storyWords         = [];
+  let storyWordIndex     = 0;
+  let storyInterval      = null;
+  let storyUtterance     = null;
+
+  // Stage 3
+  let shadowIndex        = 0;
+  let shadowScores       = [];
+  let audioCtx           = null;
+  let analyser           = null;
+  let waveAnimId         = null;
+  let mediaStream        = null;
+  let recognition        = null;
+  let isRecording        = false;
+
+  // Stage 4
+  let gapIndex           = 0;
+  let gapResults         = [];
+  let gapChunks          = [];
+  let s4Timer            = null;
+  let s4Seconds          = 240;
+
+  // Stage 5
+  let wordIndex          = 0;
+  let wordResults        = [];
+  let wordChunks         = [];
+  let s5Timer            = null;
+  let s5Seconds          = 240;
+  let wordUserAnswer     = [];
+  let wordOriginalPhrase = '';
+  let wordAvailable      = [];
+  let s5Timer2           = null;
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchSession();
+    initStage1();
+    updateProgressBar(1);
+  });
+
+  async function fetchSession() {
+    try {
+      const res = await fetch('http://localhost:3000/api/session');
+      if (!res.ok) throw new Error('No backend');
+      const data = await res.json();
+      if (data.cards && data.cards.length > 0) {
+        backendCards = data.cards;
+        // Merge backend cards into activeChunks format
+        activeChunks = backendCards.map(c => ({
+          icon: c.icon || '📝',
+          meaning: c.meaning || c.intent || '',
+          phrase: c.phrase || c.front || '',
+          ipa: c.ipa || '',
+          note: c.note || c.pattern || '',
+          image: c.image || '',
+          scenario: c.scenario || '',
+          desc: c.desc || ''
+        }));
+      }
+      if (data.streak)   sessionStats.streak   = data.streak;
+      if (data.mastered) sessionStats.mastered  = data.mastered;
+      updateHeaderStats();
+    } catch(e) {
+      console.log('Using fallback data (backend offline)');
+    }
+    buildGapAndWordChunks();
+    renderS4Progress();
+    renderS5Progress();
+  }
+
+  function buildGapAndWordChunks() {
+    // Build gap chunks from story or fallback
+    const storyChunks = defaultStory.chunks || [];
+    if (storyChunks.length > 0) {
+      gapChunks = storyChunks.map((c, i) => ({
+        icon: fallbackChunks[i % fallbackChunks.length]?.icon || '📝',
+        intent: c.intent || c.phrase,
+        sentence: `The speaker used the chunk: _____.`,
+        answer: c.phrase
+      }));
+      wordChunks = storyChunks.map((c, i) => ({
+        icon: fallbackChunks[i % fallbackChunks.length]?.icon || '📝',
+        intent: c.intent || c.phrase,
+        phrase: c.phrase
+      }));
+    } else {
+      gapChunks  = gapSentences.map((g, i) => ({
+        icon:     fallbackChunks[i % fallbackChunks.length]?.icon || '📝',
+        intent:   fallbackChunks[i % fallbackChunks.length]?.meaning || '',
+        sentence: g.sentence,
+        answer:   g.answer
+      }));
+      wordChunks = fallbackChunks.map(c => ({
+        icon:   c.icon,
+        intent: c.meaning,
+        phrase: c.phrase
+      }));
+    }
+  }
+
+  function updateHeaderStats() {
+    document.getElementById('headerDue').textContent     = activeChunks.length;
+    document.getElementById('headerMastered').textContent= sessionStats.mastered;
+    document.getElementById('headerStreak').textContent  = sessionStats.streak;
+  }
+
+  // ── Progress Bar ───────────────────────────────────────────────────────────
+  function updateProgressBar(stage) {
+    for (let i = 1; i <= 6; i++) {
+      const dot = document.getElementById(`step-dot-${i}`);
+      dot.classList.remove('active','done');
+      if (i < stage)       dot.classList.add('done');
+      else if (i === stage) dot.classList.add('active');
+    }
+    for (let i = 1; i <= 5; i++) {
+      const fill = document.getElementById(`line-${i}-${i+1}`);
+      if (fill) fill.style.width = i < stage ? '100%' : '0%';
+    }
+  }
+
+  // ── Stage Navigation ───────────────────────────────────────────────────────
+  function goToStage(n) {
+    // Cleanup previous stage
+    if (currentStage === 2) stopStory();
+    if (currentStage === 3) stopRecordingCleanup();
+
+    document.getElementById(`stage-${currentStage}`).classList.remove('active');
+    currentStage = n;
+    const panel = document.getElementById(`stage-${n}`);
+    panel.classList.add('active');
+    // Force reflow for transition
+    void panel.offsetWidth;
+
+    updateProgressBar(n);
+
+    // Init stage
+    if (n === 1) initStage1();
+    if (n === 2) initStage2();
+    if (n === 3) initStage3();
+    if (n === 4) initStage4();
+    if (n === 5) initStage5();
+    if (n === 6) initStage6();
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  STAGE 1 — SRS Flashcards
+  // ══════════════════════════════════════════════════════════════════════════
+  function initStage1() {
+    currentCardIndex = 0;
+    sessionStats.reviewed = 0;
+    updateS1Counter();
+    renderCard();
+    startS1Timer();
+  }
+
+  let s1TimerInterval = null;
+  let s1Seconds = 360;
+
+  function startS1Timer() {
+    clearInterval(s1TimerInterval);
+    s1Seconds = 360;
+    s1TimerInterval = setInterval(() => {
+      s1Seconds--;
+      const m = Math.floor(s1Seconds / 60);
+      const s = String(s1Seconds % 60).padStart(2,'0');
+      const el = document.getElementById('s1-timer');
+      if (el) el.textContent = `${m}:${s}`;
+      if (s1Seconds <= 0) clearInterval(s1TimerInterval);
+    }, 1000);
+  }
+
+  function updateS1Counter() {
+    document.getElementById('s1-remaining').textContent = Math.max(0, activeChunks.length - currentCardIndex);
+    document.getElementById('s1-reviewed').textContent  = sessionStats.reviewed;
+  }
+
+  function renderCard() {
+    const chunk = activeChunks[currentCardIndex] || activeChunks[0];
+    document.getElementById('card-icon').textContent       = chunk.icon || '📝';
+    document.getElementById('card-phrase').textContent     = chunk.phrase;
+    document.getElementById('card-scenario').textContent   = chunk.scenario || '';
+    document.getElementById('card-ipa').textContent        = chunk.ipa || '';
+    document.getElementById('card-meaning').textContent    = chunk.meaning || '';
+    document.getElementById('card-note').textContent       = chunk.note || '';
+    document.getElementById('card-desc').textContent       = chunk.desc || '';
+    const img = document.getElementById('card-image');
+    img.src = chunk.image || '';
+    img.style.display = chunk.image ? '' : 'none';
+
+    // Reset flip
+    isFlipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+  }
+
+  function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+  }
+
+  async function rateCard(rating, event) {
+    event.stopPropagation();
+
+    const chunk = activeChunks[currentCardIndex] || {};
+    sessionStats.reviewed++;
+    if (rating >= 3) sessionStats.correct++;
+    if (rating === 4) sessionStats.mastered++;
+
+    // Submit to backend
+    try {
+      await fetch('http://localhost:3000/api/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phrase: chunk.phrase, rating, timestamp: Date.now() })
+      });
+    } catch(e) { /* offline */ }
+
+    // Advance
+    currentCardIndex++;
+    if (currentCardIndex >= activeChunks.length) {
+      currentCardIndex = 0; // loop
+    }
+    updateHeaderStats();
+    updateS1Counter();
+
+    // Flip back then render new card
+    isFlipped = false;
+    document.getElementById('flashcard').classList.remove('flipped');
+    setTimeout(renderCard, 320);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  STAGE 2 — Comprehensible Input i+1
+  // ══════════════════════════════════════════════════════════════════════════
+  function initStage2() {
+    loadStoryIntoStage2(defaultStory);
+    startS2Timer();
+  }
+
+  let s2Seconds = 480;
+  let s2TimerInterval = null;
+
+  function startS2Timer() {
+    clearInterval(s2TimerInterval);
+    s2Seconds = 480;
+    s2TimerInterval = setInterval(() => {
+      s2Seconds--;
+      const m = Math.floor(s2Seconds / 60);
+      const s = String(s2Seconds % 60).padStart(2,'0');
+      const el = document.getElementById('s2-timer');
+      if (el) el.textContent = `${m}:${s}`;
+      if (s2Seconds <= 0) clearInterval(s2TimerInterval);
+    }, 1000);
+  }
+
+  function loadStoryIntoStage2(story) {
+    document.getElementById('s2-title').textContent   = story.title || '';
+    document.getElementById('s2-context').textContent = story.context || '';
+    const cover = document.getElementById('s2-cover');
+    cover.src   = story.image || '';
+
+    // Build karaoke words
+    const textEl = document.getElementById('s2-text');
+    const words   = (story.text || '').split(/\s+/);
+    storyWords    = words;
+    storyWordIndex= 0;
+
+    textEl.innerHTML = words.map((w,i) =>
+      `<span class="karaoke-word" id="kw-${i}">${w} </span>`
+    ).join('');
+
+    // Render chunks
+    const chunksEl = document.getElementById('s2-chunks');
+    chunksEl.innerHTML = (story.chunks || []).map(c =>
+      `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#c4b5fd;">
+        ${c.phrase}
+       </span>`
+    ).join('');
+  }
+
+  function toggleStoryPlayback() {
+    if (storyInterval) {
+      stopStory();
+      return;
+    }
+    const btn = document.getElementById('s2-play-btn');
+    btn.textContent = '⏸ Pause';
+    storyWordIndex = 0;
+
+    // TTS
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      storyUtterance = new SpeechSynthesisUtterance(defaultStory.text);
+      storyUtterance.rate  = 0.9;
+      storyUtterance.lang  = 'en-US';
+      window.speechSynthesis.speak(storyUtterance);
+    }
+
+    // Karaoke highlight
+    const wordsEl = document.querySelectorAll('.karaoke-word');
+    const delay   = 400; // ~400ms per word at 0.9x
+    storyWordIndex = 0;
+    storyInterval  = setInterval(() => {
+      wordsEl.forEach(w => w.classList.remove('active'));
+      if (storyWordIndex < wordsEl.length) {
+        wordsEl[storyWordIndex].classList.add('active');
+        wordsEl[storyWordIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        storyWordIndex++;
+      } else {
+        stopStory();
+      }
+    }, delay);
+  }
+
+  function stopStory() {
+    clearInterval(storyInterval);
+    storyInterval = null;
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    const btn = document.getElementById('s2-play-btn');
+    if (btn) btn.textContent = '▶ Play Story';
+    document.querySelectorAll('.karaoke-word').forEach(w => w.classList.remove('active'));
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  STAGE 3 — Active Shadowing
+  // ══════════════════════════════════════════════════════════════════════════
+  function initStage3() {
+    shadowIndex  = 0;
+    shadowScores = [];
+    renderShadowChunk();
+    renderS3Dots();
+    initWaveform();
+    startS3Timer();
+  }
+
+  let s3Seconds = 240, s3TimerInterval = null;
+  function startS3Timer() {
+    clearInterval(s3TimerInterval);
+    s3Seconds = 240;
+    // No visible timer in stage 3, just track internally
+  }
+
+  function renderShadowChunk() {
+    const chunk = activeChunks[shadowIndex % activeChunks.length];
+    document.getElementById('s3-chunk-phrase').textContent  = chunk.phrase;
+    document.getElementById('s3-chunk-ipa').textContent     = chunk.ipa || '';
+    document.getElementById('s3-chunk-meaning').textContent = chunk.meaning || '';
+    document.getElementById('s3-score-wrap').classList.add('hidden');
+  }
+
+  function renderS3Dots() {
+    const max   = Math.min(activeChunks.length, 6);
+    const dots  = document.getElementById('s3-dots');
+    dots.innerHTML = Array.from({length: max}, (_,i) => {
+      const score = shadowScores[i];
+      let cls = 'w-2.5 h-2.5 rounded-full ';
+      if (i < shadowIndex)     cls += score >= 70 ? 'bg-emerald-400' : 'bg-rose-400';
+      else if (i === shadowIndex) cls += 'bg-violet-400';
+      else cls += 'bg-white/20';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+  }
+
+  function playChunkTTS() {
+    const chunk = activeChunks[shadowIndex % activeChunks.length];
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utt  = new SpeechSynthesisUtterance(chunk.phrase);
+      utt.lang   = 'en-US';
+      utt.rate   = 0.85;
+      window.speechSynthesis.speak(utt);
+    }
+  }
+
+  function toggleRecording() {
+    if (isRecording) stopRecording();
+    else              startRecording();
+  }
+
+  function startRecording() {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      alert('Speech recognition not supported in this browser.');
+      return;
+    }
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRec();
+    recognition.lang        = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript.toLowerCase().trim();
+      evaluateShadowing(transcript);
+    };
+    recognition.onerror  = () => stopRecordingCleanup();
+    recognition.onend    = () => stopRecordingCleanup();
+
+    recognition.start();
+    isRecording = true;
+
+    const btn = document.getElementById('recordBtn');
+    btn.textContent = '⏹ Stop';
+    btn.style.background = 'linear-gradient(135deg,rgba(239,68,68,0.4),rgba(239,68,68,0.2))';
+    btn.style.borderColor = '#f87171';
+    startWaveformViz();
+  }
+
+  function stopRecording() {
+    if (recognition) recognition.stop();
+    stopRecordingCleanup();
+  }
+
+  function stopRecordingCleanup() {
+    isRecording = false;
+    const btn = document.getElementById('recordBtn');
+    if (btn) {
+      btn.textContent = '🎙 Record';
+      btn.style.background = '';
+      btn.style.borderColor = '';
+    }
+    stopWaveformViz();
+  }
+
+  function evaluateShadowing(transcript) {
+    const chunk    = activeChunks[shadowIndex % activeChunks.length];
+    const target   = chunk.phrase.toLowerCase().trim();
+    const score    = Math.round((1 - levenshtein(transcript, target) / Math.max(transcript.length, target.length, 1)) * 100);
+    const clamped  = Math.max(0, Math.min(100, score));
+
+    shadowScores[shadowIndex] = clamped;
+
+    const wrap  = document.getElementById('s3-score-wrap');
+    const label = document.getElementById('s3-score-label');
+    const recog = document.getElementById('s3-recognized');
+
+    wrap.classList.remove('hidden');
+    if (clamped >= 70) {
+      wrap.style.background  = 'rgba(52,211,153,0.08)';
+      wrap.style.borderColor = 'rgba(52,211,153,0.3)';
+      label.style.color      = '#34d399';
+      label.textContent      = `✅ ${clamped}% — Great!`;
+    } else {
+      wrap.style.background  = 'rgba(239,68,68,0.08)';
+      wrap.style.borderColor = 'rgba(239,68,68,0.3)';
+      label.style.color      = '#f87171';
+      label.textContent      = `❌ ${clamped}% — Try again`;
+    }
+    recog.textContent = `"${transcript}"`;
+
+    renderS3Dots();
+
+    setTimeout(() => {
+      shadowIndex++;
+      if (shadowIndex >= Math.min(activeChunks.length, 6)) {
+        shadowIndex = 0;
+      }
+      renderShadowChunk();
+      renderS3Dots();
+    }, 2200);
+  }
+
+  function skipShadowChunk() {
+    shadowScores[shadowIndex] = 0;
+    shadowIndex = (shadowIndex + 1) % Math.min(activeChunks.length, 6);
+    renderShadowChunk();
+    renderS3Dots();
+  }
+
+  // Waveform
+  function initWaveform() {
+    const canvas = document.getElementById('waveformCanvas');
+    const ctx    = canvas.getContext('2d');
+    drawIdleWave(ctx, canvas);
+  }
+
+  function drawIdleWave(ctx, canvas) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'rgba(139,92,246,0.3)';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath();
+    const mid = canvas.height / 2;
+    for (let x = 0; x < canvas.width; x++) {
+      const y = mid + Math.sin(x * 0.05) * 6;
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  function startWaveformViz() {
+    if (!navigator.mediaDevices) return;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      mediaStream = stream;
+      audioCtx    = new (window.AudioContext || window.webkitAudioContext)();
+      analyser    = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(analyser);
+      drawWaveform();
+    }).catch(() => {});
+  }
+
+  function drawWaveform() {
+    const canvas  = document.getElementById('waveformCanvas');
+    if (!canvas || !analyser) return;
+    const ctx     = canvas.getContext('2d');
+    const bufLen  = analyser.frequencyBinCount;
+    const dataArr = new Uint8Array(bufLen);
+
+    function draw() {
+      waveAnimId = requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(dataArr);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.lineWidth   = 2;
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.beginPath();
+      const sliceW = canvas.width / bufLen;
+      let x = 0;
+      for (let i = 0; i < bufLen; i++) {
+        const v = dataArr[i] / 128;
+        const y = (v * canvas.height) / 2;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        x += sliceW;
+      }
+      ctx.lineTo(canvas.width, canvas.height / 2);
+      ctx.stroke();
+    }
+    draw();
+  }
+
+  function stopWaveformViz() {
+    if (waveAnimId) { cancelAnimationFrame(waveAnimId); waveAnimId = null; }
+    if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+    if (audioCtx)   { audioCtx.close(); audioCtx = null; }
+    analyser = null;
+    const canvas = document.getElementById('waveformCanvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      drawIdleWave(ctx, canvas);
+    }
+  }
+
+  // ── Levenshtein Distance ───────────────────────────────────────────────────
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    const dp = Array.from({length: m+1}, (_,i) => Array.from({length: n+1}, (_,j) => j === 0 ? i : 0));
+    for (let j = 1; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        dp[i][j] = a[i-1] === b[j-1]
+          ? dp[i-1][j-1]
+          : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+      }
+    }
+    return dp[m][n];
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  STAGE 4 — Fill-the-Gap
+  // ══════════════════════════════════════════════════════════════════════════
+  function initStage4() {
+    gapIndex   = 0;
+    gapResults = [];
+    s4Seconds  = 240;
+    clearInterval(s4Timer);
+    s4Timer = setInterval(() => {
+      s4Seconds--;
+      const m = Math.floor(s4Seconds / 60);
+      const s = String(s4Seconds % 60).padStart(2,'0');
+      const el = document.getElementById('s4-timer');
+      if (el) el.textContent = `${m}:${s}`;
+      if (s4Seconds <= 0) { clearInterval(s4Timer); goToStage(5); }
+    }, 1000);
+    renderGapChunk();
+    renderS4Progress();
+  }
+
+  function renderGapChunk() {
+    if (gapChunks.length === 0) return;
+    const g = gapChunks[gapIndex % gapChunks.length];
+    document.getElementById('s4-icon').textContent   = g.icon || '📝';
+    document.getElementById('s4-intent').textContent = g.intent || '';
+
+    // Build display sentence with styled blank
+    const raw  = g.sentence || '';
+    const html = raw.replace('_____', '<span class="text-violet-400 font-bold underline decoration-dotted decoration-violet-400">_____</span>');
+    document.getElementById('s4-sentence').innerHTML = html;
+
+    const inp = document.getElementById('gap-input');
+    inp.value = '';
+    inp.className = 'gap-input';
+    document.getElementById('s4-feedback').classList.add('hidden');
+    document.getElementById('s4-hint').classList.add('hidden');
+    inp.focus();
+  }
+
+  function renderS4Progress() {
+    const max = Math.min(gapChunks.length, 6);
+    const el  = document.getElementById('s4-progress');
+    if (!el) return;
+    el.innerHTML = Array.from({length: max}, (_,i) => {
+      const r = gapResults[i];
+      let bg = 'bg-white/20';
+      if (r === true)  bg = 'bg-emerald-400';
+      if (r === false) bg = 'bg-rose-400';
+      if (i === gapIndex % max && r === undefined) bg = 'bg-violet-400';
+      return `<div class="w-2.5 h-2.5 rounded-full ${bg}"></div>`;
+    }).join('');
+  }
+
+  function checkGapAnswer() {
+    const g   = gapChunks[gapIndex % gapChunks.length];
+    const inp = document.getElementById('gap-input');
+    const val = inp.value.trim().toLowerCase();
+    const ans = (g.answer || '').toLowerCase().trim();
+
+    const fb  = document.getElementById('s4-feedback');
+    fb.classList.remove('hidden');
+
+    if (val === ans || levenshtein(val, ans) <= 2) {
+      // Correct
+      inp.className = 'gap-input correct';
+      fb.textContent = '✅ Correct! Well done.';
+      fb.style.background   = 'rgba(52,211,153,0.12)';
+      fb.style.borderLeft   = '3px solid #34d399';
+      fb.style.color        = '#34d399';
+      fb.classList.remove('hidden');
+      gapResults[gapIndex % gapChunks.length] = true;
+      renderS4Progress();
+
+      // TTS
+      speakText(g.answer);
+
+      setTimeout(() => {
+        gapIndex++;
+        if (gapIndex >= gapChunks.length) {
+          clearInterval(s4Timer);
+          goToStage(5);
+          return;
+        }
+        renderGapChunk();
+        renderS4Progress();
+      }, 1800);
+    } else {
+      // Wrong
+      inp.className = 'gap-input incorrect';
+      inp.classList.add('shake');
+      setTimeout(() => inp.classList.remove('shake'), 500);
+      fb.textContent = `❌ Not quite. Try again! (Hint: ${g.answer.split(' ').length} words)`;
+      fb.style.background   = 'rgba(239,68,68,0.10)';
+      fb.style.borderLeft   = '3px solid #f87171';
+      fb.style.color        = '#f87171';
+      gapResults[gapIndex % gapChunks.length] = false;
+      renderS4Progress();
+    }
+  }
+
+  function showGapHint() {
+    const g    = gapChunks[gapIndex % gapChunks.length];
+    const hint = (g.answer || '').split(' ').map(w => w[0] + '—'.repeat(w.length - 1)).join('  ');
+    const el   = document.getElementById('s4-hint');
+    el.textContent = `Hint: ${hint}`;
+    el.classList.remove('hidden');
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  STAGE 5 — Word Order Challenge
+  // ══════════════════════════════════════════════════════════════════════════
+  function initStage5() {
+    wordIndex        = 0;
+    wordResults      = [];
+    s5Seconds        = 240;
+    clearInterval(s5Timer);
+    s5Timer = setInterval(() => {
+      s5Seconds--;
+      const m = Math.floor(s5Seconds / 60);
+      const s = String(s5Seconds % 60).padStart(2,'0');
+      const el = document.getElementById('s5-timer');
+      if (el) el.textContent = `${m}:${s}`;
+      if (s5Seconds <= 0) { clearInterval(s5Timer); goToStage(6); }
+    }, 1000);
+    renderWordChunk();
+    renderS5Progress();
+  }
+
+  function renderWordChunk() {
+    if (wordChunks.length === 0) return;
+    const w = wordChunks[wordIndex % wordChunks.length];
+    document.getElementById('s5-icon').textContent   = w.icon || '📝';
+    document.getElementById('s5-intent').textContent = w.intent || '';
+
+    wordOriginalPhrase = w.phrase || '';
+    wordUserAnswer     = [];
+
+    // Shuffle words (Fisher-Yates)
+    const words = wordOriginalPhrase.split(' ').map((t, i) => ({ text: t, id: i }));
+    for (let i = words.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [words[i], words[j]] = [words[j], words[i]];
+    }
+    wordAvailable = words;
+
+    renderWordPool();
+    renderAnswerArea();
+    document.getElementById('s5-feedback').classList.add('hidden');
+  }
+
+  function renderWordPool() {
+    const pool = document.getElementById('s5-word-pool');
+    pool.innerHTML = wordAvailable.map((w, i) =>
+      `<button class="word-pill pop-in ${w.used ? 'used' : ''}" onclick="pickWord(${i})" id="wp-${w.id}">${w.text}</button>`
+    ).join('');
+  }
+
+  function renderAnswerArea() {
+    const area        = document.getElementById('s5-answer-area');
+    const placeholder = document.getElementById('s5-answer-placeholder');
+
+    if (wordUserAnswer.length === 0) {
+      area.innerHTML = '<span id="s5-answer-placeholder" class="text-white/25 text-sm italic">Click words below…</span>';
+      return;
+    }
+    area.innerHTML = wordUserAnswer.map((w, i) =>
+      `<button class="word-pill-answer pop-in" onclick="unpickWord(${i})">${w.text}</button>`
+    ).join('');
+  }
+
+  function pickWord(poolIdx) {
+    const w = wordAvailable[poolIdx];
+    if (!w || w.used) return;
+    w.used = true;
+    wordUserAnswer.push(w);
+    renderWordPool();
+    renderAnswerArea();
+
+    // Auto-check when all words placed
+    if (wordUserAnswer.length === wordAvailable.length) {
+      setTimeout(checkWordOrder, 200);
+    }
+  }
+
+  function unpickWord(ansIdx) {
+    const w = wordUserAnswer.splice(ansIdx, 1)[0];
+    if (!w) return;
+    const poolItem = wordAvailable.find(p => p.id === w.id);
+    if (poolItem) poolItem.used = false;
+    renderWordPool();
+    renderAnswerArea();
+    document.getElementById('s5-feedback').classList.add('hidden');
+  }
+
+  function clearWordAnswer() {
+    wordUserAnswer = [];
+    wordAvailable.forEach(w => w.used = false);
+    renderWordPool();
+    renderAnswerArea();
+    document.getElementById('s5-feedback').classList.add('hidden');
+  }
+
+  function checkWordOrder() {
+    const userPhrase   = wordUserAnswer.map(w => w.text).join(' ');
+    const targetPhrase = wordOriginalPhrase;
+    const fb           = document.getElementById('s5-feedback');
+    fb.classList.remove('hidden');
+
+    if (userPhrase.toLowerCase() === targetPhrase.toLowerCase()) {
+      // Correct
+      fb.textContent = '✅ Perfect order! 🎉';
+      fb.style.background = 'rgba(52,211,153,0.12)';
+      fb.style.color      = '#34d399';
+      document.getElementById('s5-answer-area').classList.add('glow-green');
+      wordResults[wordIndex % wordChunks.length] = true;
+      renderS5Progress();
+      speakText(targetPhrase);
+
+      setTimeout(() => {
+        document.getElementById('s5-answer-area').classList.remove('glow-green');
+        wordIndex++;
+        if (wordIndex >= wordChunks.length) {
+          clearInterval(s5Timer);
+          goToStage(6);
+          return;
+        }
+        renderWordChunk();
+        renderS5Progress();
+      }, 1800);
+    } else {
+      // Wrong
+      fb.textContent = '❌ Wrong order — try again!';
+      fb.style.background = 'rgba(239,68,68,0.10)';
+      fb.style.color      = '#f87171';
+      document.getElementById('s5-answer-area').classList.add('shake');
+      setTimeout(() => {
+        document.getElementById('s5-answer-area').classList.remove('shake');
+      }, 450);
+      wordResults[wordIndex % wordChunks.length] = false;
+      renderS5Progress();
+
+      // Clear after brief pause
+      setTimeout(() => {
+        clearWordAnswer();
+        fb.classList.add('hidden');
+      }, 1200);
+    }
+  }
+
+  function skipWordChunk() {
+    wordResults[wordIndex % wordChunks.length] = false;
+    wordIndex++;
+    if (wordIndex >= wordChunks.length) {
+      clearInterval(s5Timer);
+      goToStage(6);
+      return;
+    }
+    renderWordChunk();
+    renderS5Progress();
+  }
+
+  function renderS5Progress() {
+    const max = Math.min(wordChunks.length, 6);
+    const el  = document.getElementById('s5-progress');
+    if (!el) return;
+    el.innerHTML = Array.from({length: max}, (_,i) => {
+      const r = wordResults[i];
+      let bg = 'bg-white/20';
+      if (r === true)  bg = 'bg-emerald-400';
+      if (r === false) bg = 'bg-rose-400';
+      if (i === wordIndex % max && r === undefined) bg = 'bg-violet-400';
+      return `<div class="w-2.5 h-2.5 rounded-full ${bg}"></div>`;
+    }).join('');
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  STAGE 6 — Consolidation & Anchor
+  // ══════════════════════════════════════════════════════════════════════════
+  function initStage6() {
+    clearInterval(s4Timer);
+    clearInterval(s5Timer);
+    clearInterval(s1TimerInterval);
+    clearInterval(s2TimerInterval);
+
+    const totalReviewed = activeChunks.length;
+    const gapCorrect    = gapResults.filter(Boolean).length;
+    const wordCorrect   = wordResults.filter(Boolean).length;
+    const total         = gapResults.length + wordResults.length;
+    const correct       = gapCorrect + wordCorrect;
+    const accuracy      = total > 0 ? Math.round((correct / total) * 100) : 100;
+
+    sessionStats.streak++;
+
+    document.getElementById('s6-chunks').textContent   = totalReviewed;
+    document.getElementById('s6-accuracy').textContent = `${accuracy}%`;
+    document.getElementById('s6-streak').textContent   = `${sessionStats.streak}🔥`;
+    document.getElementById('s6-time').textContent      = '28';
+
+    // Chunk pills
+    const listEl = document.getElementById('s6-chunk-list');
+    listEl.innerHTML = activeChunks.slice(0, 12).map(c =>
+      `<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium fade-in-up"
+        style="background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(79,70,229,0.15));border:1px solid rgba(139,92,246,0.3);color:#c4b5fd;">
+        ${c.icon || '📝'} ${c.phrase}
+       </span>`
+    ).join('');
+
+    // Motivational message
+    const msgs = [
+      '🌟 Outstanding work! Your vocabulary is growing with each session. Keep immersing daily!',
+      '💪 Excellent immersion session! Consistent practice builds natural fluency faster than anything else.',
+      '🚀 You\'re building real communicative competence. These chunks will emerge naturally in conversation!',
+      '🎯 Great job! Each chunk you master brings you one step closer to effortless English fluency.'
+    ];
+    document.getElementById('s6-message').textContent = msgs[Math.floor(Math.random() * msgs.length)];
+
+    updateHeaderStats();
+  }
+
+  function restartSession() {
+    sessionStats = { reviewed: 0, correct: 0, streak: sessionStats.streak, mastered: sessionStats.mastered };
+    gapIndex  = 0; gapResults  = [];
+    wordIndex = 0; wordResults = [];
+    shadowIndex = 0; shadowScores = [];
+    goToStage(1);
+  }
+
+  // ── Utility: TTS ──────────────────────────────────────────────────────────
+  function speakText(text) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utt  = new SpeechSynthesisUtterance(text);
+    utt.lang   = 'en-US';
+    utt.rate   = 0.85;
+    window.speechSynthesis.speak(utt);
+  }
+
+  // ── Story Library Modal ────────────────────────────────────────────────────
+  function openLibrary() {
+    document.getElementById('library-modal').classList.add('open');
+    loadLibraryStories();
+  }
+
+  function closeLibrary() {
+    document.getElementById('library-modal').classList.remove('open');
+  }
+
+  async function loadLibraryStories() {
+    const loading = document.getElementById('library-loading');
+    const list    = document.getElementById('library-list');
+    loading.classList.remove('hidden');
+    list.classList.add('hidden');
+
+    try {
+      const res  = await fetch('http://localhost:3000/api/stories');
+      if (!res.ok) throw new Error('no stories');
+      const data = await res.json();
+      const stories = Array.isArray(data) ? data : (data.stories || []);
+      renderLibraryStories(stories);
+    } catch (e) {
+      // Offline fallback
+      renderLibraryStories([
+        { title: 'Morning Market Briefing', context: 'Investment committee meeting.', image: '/assets/images/market_hit.jpg', chunks: defaultStory.chunks, text: defaultStory.text },
+        { title: 'Corner Bakery',           context: 'Morning commute stop.',         image: '/assets/images/coffee.jpg',     chunks: [], text: 'The barista smiled. Could I get that to go, please? she asked. Of course!' },
+        { title: 'Tech Standup',            context: 'Engineering team meeting.',     image: '/assets/images/standup.jpg',    chunks: [], text: 'I am currently blocked on the deployment pipeline. We should circle back after lunch.' }
+      ]);
+    }
+
+    loading.classList.add('hidden');
+    list.classList.remove('hidden');
+  }
+
+  function renderLibraryStories(stories) {
+    const list = document.getElementById('library-list');
+    list.innerHTML = stories.map((s, i) =>
+      `<div class="story-card glass p-4 rounded-xl cursor-pointer" onclick="selectStory(${i},'${encodeURIComponent(JSON.stringify(s))}')">
+        <div class="flex gap-3 items-start">
+          <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0" style="background:rgba(0,0,0,0.4);">
+            <img src="${s.image || ''}" alt="" class="w-full h-full object-cover opacity-80" onerror="this.style.display='none'" />
+          </div>
+          <div>
+            <div class="font-semibold text-white text-sm">${s.title || 'Untitled'}</div>
+            <div class="text-white/50 text-xs mt-0.5">${s.context || ''}</div>
+            <div class="text-violet-400 text-xs mt-1">${(s.chunks || []).length} chunks</div>
+          </div>
+        </div>
+       </div>`
+    ).join('');
+
+    // Store stories globally for selection
+    window._libraryStories = stories;
+  }
+
+  function selectStory(idx, _encoded) {
+    const story = window._libraryStories[idx];
+    if (!story) return;
+
+    defaultStory = {
+      title:   story.title || '',
+      image:   story.image || '',
+      context: story.context || '',
+      text:    story.text || '',
+      chunks:  story.chunks || []
     };
 
-    const fallbackChunks = [
-      {
-        scenario: "Daily Life / Coffee Shop",
-        desc: "Requesting takeaway service politely without hesitation.",
-        icon: "☕",
-        meaning: "Takeaway Cup & Walking",
-        phrase: "Could I get that to go, please?",
-        ipa: "/kʊd aɪ ɡɛt ðæt tuː ɡoʊ pliːz/",
-        note: "'Could I' links smoothly as /kʊ-daɪ/; 'get that' uses a glottal stop /ɡɛ(t) ðæt/."
-      },
-      {
-        scenario: "Tech Standup",
-        desc: "Signaling an impediment in a sprint or daily sync clearly.",
-        icon: "🚦",
-        meaning: "Work Blocked / Waiting for Help",
-        phrase: "I'm currently blocked on the pipeline.",
-        ipa: "/aɪm ˈkɜːr.ənt.li blɑːkt ɑːn ðə ˈpaɪp.laɪn/",
-        note: "'blocked on' connects naturally as /blɑːk-tɑːn/."
-      },
-      {
-        scenario: "Tech Collaboration",
-        desc: "Proposing a brief follow-up discussion at a later time.",
-        icon: "📅",
-        meaning: "Follow-up Meeting Sync",
-        phrase: "Let's touch base tomorrow morning on this.",
-        ipa: "/lɛts tʌtʃ beɪs təˈmɔːr.oʊ ˈmɔːr.nɪŋ ɑːn ðɪs/",
-        note: "'touch base' natural elision on ch-to-b transition."
-      }
-    ];
+    buildGapAndWordChunks();
+    closeLibrary();
+    initStage2();
+    goToStage(2);
+  }
 
-    // ==========================================
-    // STAGE NAVIGATION
-    // ==========================================
-    function switchStage(stageNum) {
-      currentStage = stageNum;
-      
-      // Update badge
-      const badges = [
-        "STAGE 1 OF 4: VISUAL SRS FLASHCARDS",
-        "STAGE 2 OF 4: COMPREHENSIBLE INPUT (i+1)",
-        "STAGE 3 OF 4: MUSCLE MEMORY & SHADOWING",
-        "STAGE 4 OF 4: CONSOLIDATION & INGESTION"
-      ];
-      document.getElementById('stage-badge').innerText = badges[stageNum - 1];
+  // ── AI Scenario Modal ──────────────────────────────────────────────────────
+  function openAIModal()  { document.getElementById('ai-modal').classList.add('open'); }
+  function closeAIModal() { document.getElementById('ai-modal').classList.remove('open'); }
 
-      // Update tabs UI
-      for (let i = 1; i <= 4; i++) {
-        const btn = document.getElementById(`tab-stage-${i}`);
-        const cont = document.getElementById(`stage-${i}-container`);
-        if (i === stageNum) {
-          btn.className = "px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition bg-indigo-600 border-indigo-500 text-white";
-          cont.classList.remove('hidden');
-        } else {
-          btn.className = "px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition bg-slate-800/80 border-slate-700 text-slate-400 hover:text-white";
-          cont.classList.add('hidden');
-        }
-      }
+  async function generateAIScenario() {
+    const topic = document.getElementById('ai-topic-input').value.trim();
+    const level = document.getElementById('ai-level-input').value;
+    if (!topic) { alert('Please enter a topic.'); return; }
 
-      if (stageNum === 1) renderSrsCard();
-      if (stageNum === 2) renderStoryStage();
-      if (stageNum === 3) renderShadowingCard();
-      if (stageNum === 4) renderConsolidationStage();
-    }
+    const fb = document.getElementById('ai-feedback');
+    fb.textContent = '⟳ Generating scenario…';
+    fb.classList.remove('hidden');
 
-    // ==========================================
-    // STAGE 1: SRS FLASHCARDS
-    // ==========================================
-    function getSrsList() {
-      return backendCards.length > 0 ? backendCards : fallbackChunks;
-    }
-
-    function renderSrsCard() {
-      const list = getSrsList();
-      const raw = list[srsIndex];
-      const c = raw.chunk ? {
-        icon: "🗣️",
-        meaning: raw.chunk.communicativeIntent || "Direct Concept Anchor",
-        phrase: raw.chunk.textPhrase,
-        ipa: raw.chunk.phoneticIpa,
-        note: raw.chunk.collocationKey || "Formulaic Chunk",
-        image: raw.chunk.image || '/assets/images/default.jpg'
-      } : raw;
-
-      document.getElementById('srs-card-idx').innerText = `Card ${srsIndex + 1} of ${list.length}`;
-      document.getElementById('srs-icon').innerText = c.icon || "💡";
-      document.getElementById('srs-intent').innerText = c.meaning;
-      document.getElementById('srs-phrase').innerText = `"${c.phrase}"`;
-      document.getElementById('srs-ipa').innerText = c.ipa;
-      document.getElementById('srs-pattern-note').innerHTML = `<strong>Formulaic Pattern:</strong> ${c.note}`;
-      
-      // Load local image bundled with the system (no external API needed)
-      const localImage = c.image || (raw.chunk && raw.chunk.image) || '/assets/images/default.jpg';
-      const imgEl = document.getElementById('srs-image');
-      imgEl.src = localImage;
-      imgEl.style.opacity = '0';
-      imgEl.onload = () => { imgEl.style.opacity = '0.55'; };
-      
-      // Reset reveal box
-      document.getElementById('srs-revealed-box').classList.add('hidden');
-      document.getElementById('reveal-btn').classList.remove('hidden');
-    }
-
-    function playSrsAudio() {
-      const list = getSrsList();
-      const raw = list[srsIndex];
-      const phrase = raw.chunk ? raw.chunk.textPhrase : raw.phrase;
-      const utterance = new SpeechSynthesisUtterance(phrase);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function revealSrsCard() {
-      document.getElementById('srs-revealed-box').classList.remove('hidden');
-      document.getElementById('reveal-btn').classList.add('hidden');
-    }
-
-    async function submitSrsReview(rating) {
-      const list = getSrsList();
-      const current = list[srsIndex];
-
-      if (current.id) {
-        try {
-          await fetch('/api/review', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userCardId: current.id, rating })
-          });
-          updateStats();
-        } catch (e) {}
-      }
-
-      srsIndex = (srsIndex + 1) % list.length;
-      renderSrsCard();
-    }
-
-    // ==========================================
-    // STAGE 2: COMPREHENSIBLE INPUT (i+1)
-    // ==========================================
-    function renderStoryStage() {
-      document.getElementById('story-title').innerText = defaultStory.title;
-      document.getElementById('story-context').innerText = defaultStory.context;
-
-      // Set local cover image for this story
-      const coverImg = document.getElementById('story-cover-image');
-      coverImg.style.opacity = '0';
-      coverImg.src = defaultStory.image || '/assets/images/default.jpg';
-      coverImg.onload = () => { coverImg.style.opacity = '0.7'; };
-      
-      const p = document.getElementById('story-paragraph');
-      const words = defaultStory.text.split(' ');
-      p.innerHTML = words.map(w => `<span class="story-word">${w}</span>`).join(' ');
-
-      const listDiv = document.getElementById('story-chunks-list');
-      listDiv.innerHTML = defaultStory.chunks.map(ch => `
-        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
-          <div class="text-xs font-bold text-sky-400">"${ch.phrase}"</div>
-          <div class="text-[11px] text-slate-300 mt-0.5">${ch.intent}</div>
-          <div class="text-[10px] text-slate-500 font-mono mt-1">${ch.pattern}</div>
-        </div>
-      `).join('');
-    }
-
-    function toggleStoryText() {
-      isStoryTextHidden = !isStoryTextHidden;
-      const wrapper = document.getElementById('story-text-wrapper');
-      const btn = document.getElementById('story-mode-toggle');
-      if (isStoryTextHidden) {
-        wrapper.classList.add('blur-md', 'select-none');
-        btn.innerText = '👁️ Show Text';
-      } else {
-        wrapper.classList.remove('blur-md', 'select-none');
-        btn.innerText = '👁️ Hide Text (Pure Listening)';
-      }
-    }
-
-    function playFullStoryAudio() {
-      const utterance = new SpeechSynthesisUtterance(defaultStory.text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.95;
-
-      utterance.onboundary = (event) => {
-        if (event.name === 'word') {
-          const spans = document.querySelectorAll('span.story-word');
-          let accumulated = 0;
-          spans.forEach(span => {
-            const len = span.innerText.length + 1;
-            if (event.charIndex >= accumulated && event.charIndex < accumulated + len) {
-              span.classList.add('word-highlight');
-            } else {
-              span.classList.remove('word-highlight');
-            }
-            accumulated += len;
-          });
-        }
-      };
-
-      utterance.onend = () => {
-        document.querySelectorAll('span.story-word').forEach(s => s.classList.remove('word-highlight'));
-      };
-
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utterance);
-    }
-
-    // ==========================================
-    // STAGE 3: ACTIVE SHADOWING
-    // ==========================================
-    function getShadowingCurrentChunk() {
-      const list = backendCards.length > 0 ? backendCards : fallbackChunks;
-      const raw = list[shadowingIndex];
-      if (raw.chunk) {
-        return {
-          scenario: raw.chunk.scenario ? raw.chunk.scenario.title : "Immersive Context",
-          desc: raw.chunk.scenario ? raw.chunk.scenario.description : "Real-world interaction.",
-          icon: "🗣️",
-          meaning: raw.chunk.communicativeIntent || "Direct Concept Anchor",
-          phrase: raw.chunk.textPhrase,
-          ipa: raw.chunk.phoneticIpa,
-          note: raw.chunk.collocationKey || "Formulaic Chunk",
-          image: raw.chunk.image || '/assets/images/default.jpg'
-        };
-      }
-      return raw;
-    }
-
-    function renderShadowingCard() {
-      const c = getShadowingCurrentChunk();
-      document.getElementById('scenario-title').innerText = c.scenario;
-      document.getElementById('scenario-desc').innerText = c.desc;
-      document.getElementById('visual-icon').innerText = c.icon || "🗣️";
-      document.getElementById('visual-meaning').innerText = c.meaning;
-
-      // Update local scene image
-      const visImg = document.getElementById('visual-image');
-      visImg.style.opacity = '0';
-      visImg.src = c.image || '/assets/images/default.jpg';
-      visImg.onload = () => { visImg.style.opacity = '1'; };
-      
-      const container = document.getElementById('chunk-phrase-container');
-      const words = c.phrase.split(' ');
-      container.innerHTML = words.map(w => `<span class="sync-word">${w}</span>`).join(' ');
-
-      document.getElementById('chunk-ipa').innerText = c.ipa;
-      document.getElementById('chunk-note').innerHTML = `<strong class="text-white">Pattern/Focus:</strong> ${c.note}`;
-    }
-
-    function nextShadowingCard() {
-      const list = backendCards.length > 0 ? backendCards : fallbackChunks;
-      shadowingIndex = (shadowingIndex + 1) % list.length;
-      renderShadowingCard();
-      document.getElementById('eval-result').classList.add('hidden');
-    }
-
-    function playNativeAudio() {
-      const current = getShadowingCurrentChunk();
-      const utterance = new SpeechSynthesisUtterance(current.phrase);
-      utterance.lang = 'en-US';
-      utterance.rate = currentSpeed;
-      document.getElementById('audio-status').innerText = 'Playing Cadence...';
-
-      utterance.onboundary = (event) => {
-        if (event.name === 'word') {
-          const spans = document.querySelectorAll('span.sync-word');
-          let accumulated = 0;
-          spans.forEach(span => {
-            const len = span.innerText.length + 1;
-            if (event.charIndex >= accumulated && event.charIndex < accumulated + len) {
-              span.classList.add('word-highlight');
-            } else {
-              span.classList.remove('word-highlight');
-            }
-            accumulated += len;
-          });
-        }
-      };
-
-      utterance.onend = () => {
-        document.getElementById('audio-status').innerText = 'Ready';
-        document.querySelectorAll('span.sync-word').forEach(s => s.classList.remove('word-highlight'));
-      };
-
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function setSpeed(speed) {
-      currentSpeed = speed;
-      [0.75, 0.9, 1.0].forEach(s => {
-        const btn = document.getElementById(`speed-${s.toString().replace('.', '')}`);
-        if (btn) {
-          if (s === speed) btn.className = "px-2 py-0.5 bg-indigo-600 text-white rounded font-mono";
-          else btn.className = "px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono";
-        }
+    try {
+      const res = await fetch('http://localhost:3000/api/generate-scenario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, level })
       });
-    }
+      if (!res.ok) throw new Error('Generation failed');
+      const story = await res.json();
 
-    // Web Speech Recognition & Waveform
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onstart = () => {
-        isListening = true;
-        document.getElementById('mic-text').innerText = 'Listening to cadence...';
-        document.getElementById('mic-dot').classList.add('recording-pulse');
-        document.getElementById('audio-status').innerText = 'Recording speech...';
-        startWaveformVisualizer();
+      defaultStory = {
+        title:   story.title || topic,
+        image:   story.image || '/assets/images/market_hit.jpg',
+        context: story.context || `AI-generated scenario: ${topic}`,
+        text:    story.text || '',
+        chunks:  story.chunks || []
       };
 
-      recognition.onresult = (event) => {
-        evaluateSpeechLocally(event.results[0][0].transcript);
-      };
-
-      recognition.onerror = () => stopMicUI();
-      recognition.onend = () => stopMicUI();
+      buildGapAndWordChunks();
+      closeAIModal();
+      goToStage(2);
+    } catch (e) {
+      fb.textContent = '⚠️ Could not reach backend. Make sure the server is running at localhost:3000.';
+      fb.style.color = '#f87171';
     }
+  }
 
-    function stopMicUI() {
-      isListening = false;
-      document.getElementById('mic-text').innerText = 'Hold to Shadow';
-      document.getElementById('mic-dot').classList.remove('recording-pulse');
-      document.getElementById('audio-status').innerText = 'Ready';
-      stopWaveformVisualizer();
-    }
-
-    function toggleSpeechRecognition() {
-      if (!recognition) {
-        alert("Web Speech API não disponível. Use Chrome ou Edge.");
-        return;
-      }
-      if (isListening) recognition.stop();
-      else recognition.start();
-    }
-
-    async function startWaveformVisualizer() {
-      try {
-        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const source = audioContext.createMediaStreamSource(micStream);
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 64;
-        source.connect(analyser);
-
-        const canvas = document.getElementById('waveform-canvas');
-        const ctx = canvas.getContext('2d');
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        function draw() {
-          animationFrameId = requestAnimationFrame(draw);
-          analyser.getByteFrequencyData(dataArray);
-
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          const barWidth = (canvas.width / bufferLength) * 1.8;
-          let x = 0;
-          for (let i = 0; i < bufferLength; i++) {
-            const barHeight = (dataArray[i] / 255) * canvas.height;
-            ctx.fillStyle = `rgb(${79 + dataArray[i]}, 70, 229)`;
-            ctx.fillRect(x, canvas.height - barHeight, barWidth - 2, barHeight);
-            x += barWidth;
-          }
-        }
-        draw();
-      } catch (err) {}
-    }
-
-    function stopWaveformVisualizer() {
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-      if (micStream) micStream.getTracks().forEach(track => track.stop());
-    }
-
-    function evaluateSpeechLocally(userSpeech) {
-      const current = getShadowingCurrentChunk();
-      const target = current.phrase.toLowerCase().replace(/[.,?!]/g, '').trim();
-      const detected = userSpeech.toLowerCase().replace(/[.,?!]/g, '').trim();
-
-      const sim = similarityScore(target, detected);
-      const evalBox = document.getElementById('eval-result');
-      const evalHeader = document.getElementById('eval-header');
-      const evalScoreText = document.getElementById('eval-score-text');
-      const evalPaceBadge = document.getElementById('eval-pace-badge');
-      const recognizedText = document.getElementById('recognized-text');
-
-      recognizedText.innerText = userSpeech;
-      evalScoreText.innerText = `Cadence Match: ${Math.round(sim * 100)}%`;
-
-      if (sim > 0.80) {
-        evalBox.className = "p-4 bg-emerald-950/40 border border-emerald-500/30 rounded-xl space-y-2";
-        evalHeader.className = "flex justify-between items-center text-xs font-bold text-emerald-400";
-        evalPaceBadge.className = "bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded text-[10px]";
-        evalPaceBadge.innerText = "Natural Delivery";
-      } else if (sim > 0.50) {
-        evalBox.className = "p-4 bg-amber-950/40 border border-amber-500/30 rounded-xl space-y-2";
-        evalHeader.className = "flex justify-between items-center text-xs font-bold text-amber-400";
-        evalPaceBadge.className = "bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded text-[10px]";
-        evalPaceBadge.innerText = "Partial Match - Try Shadowing Again";
-      } else {
-        evalBox.className = "p-4 bg-rose-950/40 border border-rose-500/30 rounded-xl space-y-2";
-        evalHeader.className = "flex justify-between items-center text-xs font-bold text-rose-400";
-        evalPaceBadge.className = "bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded text-[10px]";
-        evalPaceBadge.innerText = "Listen to Cadence First";
-      }
-      evalBox.classList.remove('hidden');
-    }
-
-    function similarityScore(s1, s2) {
-      let longer = s1, shorter = s2;
-      if (s1.length < s2.length) { longer = s2; shorter = s1; }
-      if (longer.length === 0) return 1.0;
-      return (longer.length - editDistance(longer, shorter)) / parseFloat(longer.length);
-    }
-
-    function editDistance(s1, s2) {
-      s1 = s1.toLowerCase(); s2 = s2.toLowerCase();
-      const costs = [];
-      for (let i = 0; i <= s1.length; i++) {
-        let lastValue = i;
-        for (let j = 0; j <= s2.length; j++) {
-          if (i === 0) costs[j] = j;
-          else {
-            if (j > 0) {
-              let newValue = costs[j - 1];
-              if (s1.charAt(i - 1) !== s2.charAt(j - 1))
-                newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-              costs[j - 1] = lastValue;
-              lastValue = newValue;
-            }
-          }
-        }
-        if (i > 0) costs[s2.length] = lastValue;
-      }
-      return costs[s2.length];
-    }
-
-    // ==========================================
-    // STAGE 4: CONSOLIDATION
-    // ==========================================
-    function renderConsolidationStage() {
-      const container = document.getElementById('consolidation-chunks-list');
-      container.innerHTML = defaultStory.chunks.map((ch, idx) => `
-        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
-          <div>
-            <div class="text-sm font-bold text-white">"${ch.phrase}"</div>
-            <div class="text-xs text-indigo-300 mt-0.5">${ch.intent}</div>
-            <div class="text-[10px] text-slate-500 font-mono mt-1">${ch.pattern}</div>
-          </div>
-          <span class="text-xs font-semibold px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
-            Ready for Tomorrow's SRS
-          </span>
-        </div>
-      `).join('');
-    }
-
-    function finishSession() {
-      alert("Parabéns! Sessão de 20 minutos concluída com sucesso. Seus novos Chunks foram agendados no FSRS.");
-      switchStage(1);
-    }
-
-    // ==========================================
-    // API & BACKEND INTEGRATION
-    // ==========================================
-    async function loadSessionFromAPI() {
-      try {
-        const res = await fetch('/api/session');
-        const data = await res.json();
-        if (data.cards && data.cards.length > 0) {
-          backendCards = data.cards;
-        }
-        updateStats();
-        switchStage(1);
-      } catch (err) {
-        switchStage(1);
-      }
-    }
-
-    async function updateStats() {
-      try {
-        const res = await fetch('/api/stats');
-        const stats = await res.json();
-        document.getElementById('stat-cards').innerHTML = `SRS Cards: <strong class="text-white">${stats.totalCards || backendCards.length}</strong>`;
-        document.getElementById('stat-mastered').innerHTML = `Mastered: <strong class="text-emerald-400">${stats.masteredCards || 0}</strong>`;
-      } catch (e) {}
-    }
-
-    // ==========================================
-    // OFFLINE STORY LIBRARY
-    // ==========================================
-    let offlineStories = [];
-
-    async function loadStoriesFromAPI() {
-      try {
-        const res = await fetch('/api/stories');
-        offlineStories = await res.json();
-      } catch (err) {
-        console.warn("Falha ao buscar histórias:", err);
-      }
-    }
-
-    function openStoriesModal() {
-      const container = document.getElementById('curated-stories-list');
-      container.innerHTML = offlineStories.map((s, idx) => `
-        <div onclick="selectStory(${idx})" class="p-4 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-indigo-500/50 rounded-xl cursor-pointer transition flex items-center justify-between group">
-          <div class="flex items-center gap-3">
-            <span class="text-3xl">${s.icon || '📖'}</span>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-white group-hover:text-indigo-300 transition">${s.title}</span>
-                <span class="text-[10px] font-mono px-2 py-0.2 bg-slate-800 text-slate-300 rounded">${s.cefr}</span>
-              </div>
-              <p class="text-[11px] text-slate-400 mt-1 line-clamp-1">${s.context}</p>
-              <div class="text-[10px] text-indigo-400 font-mono mt-1">${s.chunks.length} Lexical Chunks</div>
-            </div>
-          </div>
-          <span class="text-xs text-indigo-400 font-semibold group-hover:translate-x-1 transition">Study →</span>
-        </div>
-      `).join('');
-
-      document.getElementById('stories-modal').classList.remove('hidden');
-      document.getElementById('stories-modal').classList.add('flex');
-    }
-
-    function closeStoriesModal() {
-      document.getElementById('stories-modal').classList.add('hidden');
-      document.getElementById('stories-modal').classList.remove('flex');
-    }
-
-    function selectStory(idx) {
-      const s = offlineStories[idx];
-      if (!s) return;
-
-      defaultStory.title = s.title;
-      defaultStory.context = s.context;
-      defaultStory.text = s.text;
-      defaultStory.chunks = s.chunks.map(ch => ({
-        phrase: ch.phrase,
-        intent: ch.communicativeIntent,
-        pattern: ch.pattern
-      }));
-
-      // Injeta os chunks dessa história também na esteira de shadowing
-      backendCards = s.chunks.map(ch => ({
-        chunk: {
-          textPhrase: ch.phrase,
-          phoneticIpa: ch.ipa,
-          communicativeIntent: ch.communicativeIntent,
-          collocationKey: ch.pattern,
-          scenario: {
-            title: s.title,
-            description: s.context
-          }
-        }
-      }));
-
-      closeStoriesModal();
-      srsIndex = 0;
-      shadowingIndex = 0;
-      switchStage(2); // Inicia pela leitura da história selecionada
-    }
-
-    // Modal
-    function openScenarioModal() {
-      document.getElementById('scenario-modal').classList.remove('hidden');
-      document.getElementById('scenario-modal').classList.add('flex');
-    }
-
-    function closeScenarioModal() {
-      document.getElementById('scenario-modal').classList.add('hidden');
-      document.getElementById('scenario-modal').classList.remove('flex');
-    }
-
-    async function generateCustomScenario() {
-      const topicInput = document.getElementById('custom-topic-input');
-      const topic = topicInput.value.trim();
-      if (!topic) return;
-
-      const genBtn = document.getElementById('gen-btn');
-      genBtn.innerText = 'Generating with AI...';
-      genBtn.disabled = true;
-
-      try {
-        const res = await fetch('/api/generate-scenario', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic })
-        });
-        const data = await res.json();
-        if (data.newCards) {
-          backendCards = [...backendCards, ...data.newCards];
-          
-          if (data.scenario) {
-            defaultStory.title = data.scenario.scenarioTitle;
-            defaultStory.context = data.scenario.contextSummary;
-            defaultStory.text = data.scenario.miniStoryText;
-            defaultStory.chunks = data.scenario.keyChunks.map(k => ({
-              phrase: k.phrase,
-              intent: k.communicativeIntent,
-              pattern: k.lexicalPattern
-            }));
-          }
-
-          updateStats();
-          closeScenarioModal();
-          topicInput.value = '';
-          switchStage(2); // Vai direto para a nova história gerada
-        }
-      } catch (err) {
-        alert("Erro na geração de cenário: " + err.message);
-      } finally {
-        genBtn.innerText = 'Generate Chunks';
-        genBtn.disabled = false;
-      }
-    }
-
-    // Inicialização
-    loadSessionFromAPI();
-    loadStoriesFromAPI();
   </script>
 </body>
 </html>
