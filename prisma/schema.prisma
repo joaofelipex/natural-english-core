@@ -1,0 +1,140 @@
+// Prisma Schema: Natural English Acquisition Architecture (100% Free / Local SQLite)
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  name               String?
+  targetLevel        String              @default("B2") // A1, A2, B1, B2, C1, C2
+  dailyGoalMinutes   Int                 @default(20)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  cards              UserCard[]
+  shadowingAttempts  ShadowingAttempt[]
+  reviewLogs         ReviewLog[]
+
+  @@map("users")
+}
+
+model Scenario {
+  id                 String    @id @default(uuid())
+  title              String    // Ex: "Ordering Specialty Coffee", "Negotiating Project Scope"
+  category           String    // Ex: "Daily Life", "Professional / Tech", "Social"
+  cefrLevel          String    @default("B1")
+  description        String    // Explicado em inglês simples
+  coverImageUrl      String?
+
+  chunks             Chunk[]
+
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@map("scenarios")
+}
+
+model Chunk {
+  id                   String      @id @default(uuid())
+  scenarioId           String
+  scenario             Scenario    @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  
+  textPhrase           String      // Ex: "Could I get that to go?"
+  phoneticIpa          String      // Ex: "/kʊd aɪ ɡɛt ðæt tuː ɡoʊ/"
+  communicativeIntent  String      // Ex: "Requesting takeaway service politely"
+  collocationKey       String?     // Ex: "get to go"
+  frequencyRank        Int?        // Ranking de uso na língua falada
+  
+  assets               Asset[]
+  userCards            UserCard[]
+  shadowingAttempts    ShadowingAttempt[]
+
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  @@map("chunks")
+}
+
+model Asset {
+  id                 String    @id @default(uuid())
+  chunkId            String
+  chunk              Chunk     @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  assetType          String    // "IMAGE_CONTEXT", "AUDIO_NATIVE", "AUDIO_SLOW"
+  storageUrl         String    // Caminho local ou URL de asset
+  durationMs         Int?      // Duração para áudios
+  alignmentJson      String?   // JSON serializado de timestamps palavra-a-palavra
+
+  createdAt          DateTime  @default(now())
+
+  @@map("assets")
+}
+
+model UserCard {
+  id                 String     @id @default(uuid())
+  userId             String
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chunkId            String
+  chunk              Chunk      @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  // Variáveis do Algoritmo FSRS v4.5
+  state              String     @default("NEW") // NEW, LEARNING, REVIEW, RELEARNING
+  stability          Float      @default(0.0)
+  difficulty         Float      @default(0.0)
+  elapsedDays        Int        @default(0)
+  scheduledDays      Int        @default(0)
+  reps               Int        @default(0)
+  lapses             Int        @default(0)
+  
+  dueDate            DateTime   @default(now())
+  lastReviewDate     DateTime?
+
+  reviewLogs         ReviewLog[]
+
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@unique([userId, chunkId])
+  @@map("user_cards")
+}
+
+model ReviewLog {
+  id                 String    @id @default(uuid())
+  userCardId         String
+  userCard           UserCard  @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rating             Int       // 1 (Again), 2 (Hard), 3 (Good), 4 (Easy)
+  state              String
+  elapsedDays        Int
+  scheduledDays      Int
+  reviewedAt         DateTime  @default(now())
+
+  @@map("review_logs")
+}
+
+model ShadowingAttempt {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chunkId            String
+  chunk              Chunk     @relation(fields: [chunkId], references: [id], onDelete: Cascade)
+
+  audioRecordingUrl  String?   // Caminho da gravação local
+  overallScore       Float     // Score 0.0 - 100.0
+  accuracyScore      Float     // Precisão das palavras/fonemas
+  fluencyScore       Float     // Fluência
+  transcriptDetected String    // O que o microfone ouviu
+
+  createdAt          DateTime  @default(now())
+
+  @@map("shadowing_attempts")
+}

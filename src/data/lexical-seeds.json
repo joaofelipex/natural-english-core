@@ -1,0 +1,61 @@
+[
+  {
+    "scenario": "Daily Life / Coffee Shop",
+    "title": "Ordering Specialty Coffee",
+    "cefr": "A2",
+    "chunks": [
+      {
+        "phrase": "Could I get that to go, please?",
+        "ipa": "/kʊd aɪ ɡɛt ðæt tuː ɡoʊ pliːz/",
+        "communicativeIntent": "Requesting food or beverage in takeaway packaging politely",
+        "lexicalPattern": "Could I get [ITEM] to go, please?",
+        "visualConceptCue": "paper_cup_walking_person.svg",
+        "audioMockNative": "https://assets.natural-english.io/audio/chunks/could_i_get_that_to_go.mp3",
+        "connectedSpeechNote": "'Could I' links smoothly as /kʊ-daɪ/; 'get that' uses a glottal stop /ɡɛ(t) ðæt/."
+      },
+      {
+        "phrase": "I'm running a bit late.",
+        "ipa": "/aɪm ˈrʌn.ɪŋ ə bɪt leɪt/",
+        "communicativeIntent": "Explaining slight time delay without sounding panicked",
+        "lexicalPattern": "I'm running a bit [ADJECTIVE/STATE]",
+        "visualConceptCue": "wristwatch_hurried_steps.svg",
+        "audioMockNative": "https://assets.natural-english.io/audio/chunks/im_running_a_bit_late.mp3",
+        "connectedSpeechNote": "'bit late' blends together with a suppressed 't'."
+      }
+    ]
+  },
+  {
+    "scenario": "Tech & Professional Collaboration",
+    "title": "Async Software Standup",
+    "cefr": "B2",
+    "chunks": [
+      {
+        "phrase": "I'm currently blocked on the deployment pipeline.",
+        "ipa": "/aɪm ˈkɜːr.ənt.li blɑːkt ɑːn ðə dɪˈplɔɪ.mənt ˈpaɪp.laɪn/",
+        "communicativeIntent": "Signaling an impediment in a sprint or daily sync clearly",
+        "lexicalPattern": "I'm currently blocked on [SPECIFIC_OBSTACLE]",
+        "visualConceptCue": "red_traffic_light_server.svg",
+        "audioMockNative": "https://assets.natural-english.io/audio/chunks/blocked_on_pipeline.mp3",
+        "connectedSpeechNote": "'blocked on' connects as /blɑːk-tɑːn/."
+      },
+      {
+        "phrase": "Let's touch base tomorrow morning on this.",
+        "ipa": "/lɛts tʌtʃ beɪs təˈmɔːr.oʊ ˈmɔːr.nɪŋ ɑːn ðɪs/",
+        "communicativeIntent": "Proposing a brief follow-up discussion at a later time",
+        "lexicalPattern": "Let's touch base [TIME_PERIOD] on [TOPIC]",
+        "visualConceptCue": "calendar_two_heads_talking.svg",
+        "audioMockNative": "https://assets.natural-english.io/audio/chunks/lets_touch_base.mp3",
+        "connectedSpeechNote": "'touch base' natural elision on ch-to-b transition."
+      },
+      {
+        "phrase": "Does that make sense from your end?",
+        "ipa": "/dʌz ðæt meɪk sɛns frʌm jʊər ɛnd/",
+        "communicativeIntent": "Checking comprehension and inviting alignment without sounding confrontational",
+        "lexicalPattern": "Does that make sense from [PERSPECTIVE]?",
+        "visualConceptCue": "thumbs_up_handshake_nod.svg",
+        "audioMockNative": "https://assets.natural-english.io/audio/chunks/does_that_make_sense.mp3",
+        "connectedSpeechNote": "'Does that' blends as /dʌz-ðæt/; 'your end' links as /jʊər-ɛnd/."
+      }
+    ]
+  }
+]

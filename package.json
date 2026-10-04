@@ -1,0 +1,25 @@
+{
+  "name": "natural-english-core",
+  "version": "1.0.0",
+  "description": "Natural English Acquisition Engine - SRS, Lexical Chunks & Shadowing",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "seed": "tsx src/db/seed.ts",
+    "test:fsrs": "tsx src/fsrs/test-fsrs.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^2.27.0",
+    "@prisma/client": "^5.20.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "prisma": "^5.20.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
