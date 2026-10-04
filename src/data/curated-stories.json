@@ -5,6 +5,7 @@
     "category": "Finance & Markets",
     "title": "Morning Market Briefing",
     "icon": "📈",
+    "image": "/assets/images/market_hit.jpg",
     "visualMeaning": "Market Volatility & Strategy",
     "context": "Discussing market volatility and portfolio strategy during a morning investment committee meeting.",
     "text": "Good morning, everyone. As you saw in the pre-market, equities are taking a hit due to the new inflation data. We need to hedge our exposure immediately. I suggest we shift some capital into fixed income to weather the storm. Let's run the numbers and circle back before the closing bell.",
@@ -14,21 +15,24 @@
         "ipa": "/ˈteɪ.kɪŋ ə hɪt/",
         "communicativeIntent": "Describing a sudden loss in value or negative impact in the market",
         "pattern": "[ASSET/MARKET] is taking a hit",
-        "connectedSpeech": "'taking a' links as /teɪ-kɪ-nə/."
+        "connectedSpeech": "'taking a' links as /teɪ-kɪ-nə/.",
+        "image": "/assets/images/market_hit.jpg"
       },
       {
         "phrase": "hedge our exposure",
         "ipa": "/hɛdʒ aʊər ɪkˈspoʊ.ʒər/",
         "communicativeIntent": "Proposing a risk management or defensive strategy",
         "pattern": "We need to hedge our [RISK/EXPOSURE]",
-        "connectedSpeech": "'hedge our' blends as /hɛ-dʒaʊər/."
+        "connectedSpeech": "'hedge our' blends as /hɛ-dʒaʊər/.",
+        "image": "/assets/images/portfolio.jpg"
       },
       {
         "phrase": "circle back before the bell",
         "ipa": "/ˈsɜːr.kəl bæk bɪˈfɔːr ðə bɛl/",
         "communicativeIntent": "Scheduling a follow-up discussion before the market closes",
         "pattern": "Let's circle back before [DEADLINE]",
-        "connectedSpeech": "'circle back' has an unreleased 'k'."
+        "connectedSpeech": "'circle back' has an unreleased 'k'.",
+        "image": "/assets/images/earnings.jpg"
       }
     ]
   },
@@ -38,6 +42,7 @@
     "category": "Wealth Management",
     "title": "Rebalancing a Client's Portfolio",
     "icon": "💼",
+    "image": "/assets/images/portfolio.jpg",
     "visualMeaning": "Asset Allocation & Risk Management",
     "context": "Advising a high-net-worth client to diversify their assets amid shifting central bank interest rates.",
     "text": "Looking at your current asset allocation, you're heavily weighted in tech stocks. Given the recent rate hikes, it might be prudent to rebalance your portfolio. We should look into diversifying across emerging markets to mitigate downside risk. Are you comfortable with that approach moving forward?",
@@ -47,21 +52,24 @@
         "ipa": "/ˈhɛv.ə.li ˈweɪ.tɪd ɪn/",
         "communicativeIntent": "Describing a concentrated position in a specific asset class",
         "pattern": "You're heavily weighted in [ASSET_CLASS]",
-        "connectedSpeech": "Flap 't' in 'weighted'; links to 'in' as /weɪ-dɪ-dɪn/."
+        "connectedSpeech": "Flap 't' in 'weighted'; links to 'in' as /weɪ-dɪ-dɪn/.",
+        "image": "/assets/images/portfolio.jpg"
       },
       {
         "phrase": "it might be prudent to",
         "ipa": "/ɪt maɪt bi ˈpruː.dənt tuː/",
         "communicativeIntent": "Politely recommending a cautious financial move to a client",
         "pattern": "It might be prudent to [ACTION]",
-        "connectedSpeech": "Unreleased 't's in 'might' and 'prudent'."
+        "connectedSpeech": "Unreleased 't's in 'might' and 'prudent'.",
+        "image": "/assets/images/portfolio.jpg"
       },
       {
         "phrase": "mitigate downside risk",
         "ipa": "/ˈmɪt.ɪ.ɡeɪt ˈdaʊn.saɪd rɪsk/",
         "communicativeIntent": "Explaining the goal of protecting capital against potential losses",
         "pattern": "To mitigate downside risk, we should...",
-        "connectedSpeech": "'downside risk' blends smoothly /daʊn-saɪd-rɪsk/."
+        "connectedSpeech": "'downside risk' blends smoothly /daʊn-saɪd-rɪsk/.",
+        "image": "/assets/images/earnings.jpg"
       }
     ]
   },
@@ -71,6 +79,7 @@
     "category": "Corporate Finance",
     "title": "Q3 Earnings Call Breakdown",
     "icon": "📊",
+    "image": "/assets/images/earnings.jpg",
     "visualMeaning": "Financial Results & Stock Action",
     "context": "Analyzing a company's quarterly earnings report and its immediate impact on the stock price.",
     "text": "The company just released its Q3 earnings, and they beat top-line estimates by a solid margin. However, their forward guidance was weaker than expected, which is why the stock is selling off. We should hold off on buying the dip until the volatility settles down and we see clear support.",
@@ -80,21 +89,24 @@
         "ipa": "/biːt ˈtɑːp.laɪn ˈɛs.tə.məts/",
         "communicativeIntent": "Reporting that revenue exceeded market expectations",
         "pattern": "They beat [TOP-LINE/BOTTOM-LINE] estimates",
-        "connectedSpeech": "Unreleased 't' in 'beat' before the 't' in 'top'."
+        "connectedSpeech": "Unreleased 't' in 'beat' before the 't' in 'top'.",
+        "image": "/assets/images/earnings.jpg"
       },
       {
         "phrase": "forward guidance",
         "ipa": "/ˈfɔːr.wərd ˈɡaɪ.dəns/",
         "communicativeIntent": "Referring to a company's forecasted future performance",
         "pattern": "Their forward guidance was [ADJECTIVE]",
-        "connectedSpeech": "'forward' has a soft 'd' linking slightly to the 'g'."
+        "connectedSpeech": "'forward' has a soft 'd' linking slightly to the 'g'.",
+        "image": "/assets/images/earnings.jpg"
       },
       {
         "phrase": "buying the dip",
         "ipa": "/ˈbaɪ.ɪŋ ðə dɪp/",
         "communicativeIntent": "Purchasing an asset after it has declined in price",
         "pattern": "Hold off on buying the dip",
-        "connectedSpeech": "'buying the' connects smoothly /baɪ-ɪŋ-ðə/."
+        "connectedSpeech": "'buying the' connects smoothly /baɪ-ɪŋ-ðə/.",
+        "image": "/assets/images/market_hit.jpg"
       }
     ]
   },
@@ -104,6 +116,7 @@
     "category": "Daily Life / Travel",
     "title": "Ordering at the Corner Bakery",
     "icon": "☕",
+    "image": "/assets/images/coffee.jpg",
     "visualMeaning": "Takeaway Cup & Morning Commute",
     "context": "Mark is on his way to work and makes a quick stop at a busy bakery to grab breakfast before catching the subway.",
     "text": "Mark walked into the bakery with only five minutes to spare. The line was moving fast. When it was his turn, he smiled and said, 'Could I get that to go, please? I'm running a bit late for my train.' The cashier handed him a warm pastry and nodded, 'No problem at all! Have a great day ahead.' Mark grabbed his order and headed straight for the station.",
@@ -113,21 +126,24 @@
         "ipa": "/kʊd aɪ ɡɛt ðæt tuː ɡoʊ pliːz/",
         "communicativeIntent": "Requesting takeout packaging politely and quickly",
         "pattern": "Could I get [ITEM] to go, please?",
-        "connectedSpeech": "'Could I' links as /kʊ-daɪ/; 'get that' uses a glottal stop /ɡɛ(t) ðæt/."
+        "connectedSpeech": "'Could I' links as /kʊ-daɪ/; 'get that' uses a glottal stop /ɡɛ(t) ðæt/.",
+        "image": "/assets/images/coffee.jpg"
       },
       {
         "phrase": "I'm running a bit late.",
         "ipa": "/aɪm ˈrʌn.ɪŋ ə bɪt leɪt/",
         "communicativeIntent": "Explaining mild urgency without sounding anxious",
         "pattern": "I'm running a bit [ADJECTIVE/STATE]",
-        "connectedSpeech": "'bit late' blends together with an unreleased 't'."
+        "connectedSpeech": "'bit late' blends together with an unreleased 't'.",
+        "image": "/assets/images/coffee.jpg"
       },
       {
         "phrase": "Have a great day ahead!",
         "ipa": "/hæv ə ɡreɪt deɪ əˈhɛd/",
         "communicativeIntent": "Standard warm farewell in service interactions",
         "pattern": "Have a great [TIME_UNIT] ahead!",
-        "connectedSpeech": "'Have a' connects smoothly as /hæ-və/."
+        "connectedSpeech": "'Have a' connects smoothly as /hæ-və/.",
+        "image": "/assets/images/coffee.jpg"
       }
     ]
   },
@@ -137,6 +153,7 @@
     "category": "Travel & Logistics",
     "title": "Tight Layover at the Airport",
     "icon": "✈️",
+    "image": "/assets/images/airport.jpg",
     "visualMeaning": "Boarding Gate & Flight Connections",
     "context": "Elena just landed in Chicago and has only 35 minutes to connect to her final flight to Seattle.",
     "text": "Elena rushed through Terminal 3, checking the flight monitors every few seconds. Her boarding pass showed gate B12, but the sign was flickering. She approached a gate agent and asked breathlessly, 'Excuse me, is this flight still boarding for Seattle? My connecting flight was delayed.' The agent checked her screen, 'Yes, they just announced final boarding. You're good to go!'",
@@ -146,21 +163,24 @@
         "ipa": "/ɪz ðɪs flaɪt stɪl ˈbɔːr.dɪŋ/",
         "communicativeIntent": "Checking if boarding doors are still open under time pressure",
         "pattern": "Is [EVENT/TRANSPORT] still [ACTION-ING]?",
-        "connectedSpeech": "'Is this' connects as /ɪz-ðɪs/; flap 't' on 'flight still'."
+        "connectedSpeech": "'Is this' connects as /ɪz-ðɪs/; flap 't' on 'flight still'.",
+        "image": "/assets/images/airport.jpg"
       },
       {
         "phrase": "My connecting flight was delayed.",
         "ipa": "/maɪ kəˈnɛk.tɪŋ flaɪt wʌz dɪˈleɪd/",
         "communicativeIntent": "Explaining reason for late arrival concisely",
         "pattern": "My [TRANSPORT/APPOINTMENT] was [STATE].",
-        "connectedSpeech": "Stress on 'delayed'; 'connecting flight' elides the final 'g'."
+        "connectedSpeech": "Stress on 'delayed'; 'connecting flight' elides the final 'g'.",
+        "image": "/assets/images/airport.jpg"
       },
       {
         "phrase": "You're good to go!",
         "ipa": "/jʊr ɡʊd tuː ɡoʊ/",
         "communicativeIntent": "Reassuring someone that everything is verified and they may proceed",
         "pattern": "You're good to [VERB/PROCEED].",
-        "connectedSpeech": "'good to go' rhythmically contracts as /ɡʊ-tə-ɡoʊ/."
+        "connectedSpeech": "'good to go' rhythmically contracts as /ɡʊ-tə-ɡoʊ/.",
+        "image": "/assets/images/airport.jpg"
       }
     ]
   },
@@ -170,6 +190,7 @@
     "category": "Professional / Tech",
     "title": "Resolving a Critical Incident",
     "icon": "🚦",
+    "image": "/assets/images/standup.jpg",
     "visualMeaning": "Work Impediment & Team Alignment",
     "context": "David is briefing the engineering team during morning standup after an unexpected production server alert.",
     "text": "David opened his video feed as the clock struck ten. 'Morning team. Quick update from my side: I'm currently blocked on the deployment pipeline because the staging credentials expired overnight.' Sarah raised her hand, 'I have administrative access. Let's touch base right after this call to unblock you.' David smiled, 'Sounds like a plan. Does that make sense from your end?'",
@@ -179,21 +200,24 @@
         "ipa": "/aɪm ˈkɜːr.ənt.li blɑːkt ɑːn/",
         "communicativeIntent": "Clearly stating an obstacle in collaborative work",
         "pattern": "I'm currently blocked on [IMPEDIMENT]",
-        "connectedSpeech": "'blocked on' links smoothly: /blɑːk-tɑːn/."
+        "connectedSpeech": "'blocked on' links smoothly: /blɑːk-tɑːn/.",
+        "image": "/assets/images/standup.jpg"
       },
       {
         "phrase": "Let's touch base right after this.",
         "ipa": "/lɛts tʌtʃ beɪs raɪt ˈæf.tər ðɪs/",
         "communicativeIntent": "Proposing a brief dedicated follow-up discussion",
         "pattern": "Let's touch base [TIME_PERIOD] on [TOPIC]",
-        "connectedSpeech": "'right after' connects with a American flap t: /raɪ-dæf-tər/."
+        "connectedSpeech": "'right after' connects with a American flap t: /raɪ-dæf-tər/.",
+        "image": "/assets/images/standup.jpg"
       },
       {
         "phrase": "Does that make sense from your end?",
         "ipa": "/dʌz ðæt meɪk sɛns frʌm jʊər ɛnd/",
         "communicativeIntent": "Politely inviting agreement and validation without confrontation",
         "pattern": "Does that make sense from [PERSPECTIVE]?",
-        "connectedSpeech": "'Does that' blends as /dʌz-ðæt/; 'your end' links as /jʊər-ɛnd/."
+        "connectedSpeech": "'Does that' blends as /dʌz-ðæt/; 'your end' links as /jʊər-ɛnd/.",
+        "image": "/assets/images/standup.jpg"
       }
     ]
   },
@@ -203,6 +227,7 @@
     "category": "Health & Daily Needs",
     "title": "Describing Symptoms at the Walk-in Clinic",
     "icon": "🩺",
+    "image": "/assets/images/doctor.jpg",
     "visualMeaning": "Health Assessment & Recovery",
     "context": "Clara visits an urgent care clinic after catching a bad cold during the winter season.",
     "text": "The nurse called Clara into room 4. Dr. Bennett walked in with a clipboard. 'Hello Clara, what seems to be the trouble today?' Clara cleared her throat gently, 'I've had this persistent cough for the past three days, and it feels worse whenever I lie down.' Dr. Bennett listened to her breathing, 'Your lungs sound clear, but let's make sure you get plenty of rest and stay hydrated.'",
@@ -212,21 +237,24 @@
         "ipa": "/wʌt siːmz tuː biː ðə ˈtrʌb.əl/",
         "communicativeIntent": "Standard empathetic professional greeting in healthcare",
         "pattern": "What seems to be [PROBLEM]?",
-        "connectedSpeech": "'What seems' links as /wʌt-siːmz/."
+        "connectedSpeech": "'What seems' links as /wʌt-siːmz/.",
+        "image": "/assets/images/doctor.jpg"
       },
       {
         "phrase": "I've had this for the past few days.",
         "ipa": "/aɪv hæd ðɪs fɔːr ðə pæst fjuː deɪz/",
         "communicativeIntent": "Expressing duration of a condition without calculating specific dates",
         "pattern": "I've had [SYMPTOM/SITUATION] for the past [TIMEFRAME]",
-        "connectedSpeech": "'I've had' blends as /aɪ-væd/."
+        "connectedSpeech": "'I've had' blends as /aɪ-væd/.",
+        "image": "/assets/images/doctor.jpg"
       },
       {
         "phrase": "It feels worse whenever I...",
         "ipa": "/ɪt fiːlz wɜːrs wɛnˈɛv.ər aɪ/",
         "communicativeIntent": "Identifying triggers or conditions clearly",
         "pattern": "It feels [ADJECTIVE] whenever [TRIGGER]",
-        "connectedSpeech": "'feels worse' connects with a smooth /z-w/ transition."
+        "connectedSpeech": "'feels worse' connects with a smooth /z-w/ transition.",
+        "image": "/assets/images/doctor.jpg"
       }
     ]
   },
@@ -236,6 +264,7 @@
     "category": "Social & Dining",
     "title": "Polite Correction at a Dinner Gathering",
     "icon": "🍽️",
+    "image": "/assets/images/restaurant.jpg",
     "visualMeaning": "Dining Etiquette & Polite Correction",
     "context": "Julian is having dinner with colleagues when the waiter brings a dish with an ingredient he specifically asked to avoid.",
     "text": "The waiter placed the plates across the table. Julian glanced down and noticed crushed peanuts on his salad. Instead of making a scene, he caught the waiter's eye discreetly. 'Excuse me, I'm terribly sorry, but I believe I ordered the garden salad without nuts due to an allergy.' The waiter was immediately apologetic, 'I am so sorry about that oversight. I'll have the kitchen remake that for you right away.'",
@@ -245,21 +274,24 @@
         "ipa": "/aɪ bɪˈliːv aɪ ˈɔːr.dərd/",
         "communicativeIntent": "Diplomatically correcting a mistake without blaming the person",
         "pattern": "I believe I [VERB-PAST]...",
-        "connectedSpeech": "'believe I' links as /bɪ-liː-vaɪ/."
+        "connectedSpeech": "'believe I' links as /bɪ-liː-vaɪ/.",
+        "image": "/assets/images/restaurant.jpg"
       },
       {
         "phrase": "Sorry about that oversight.",
         "ipa": "/ˈsɑːr.i əˈbaʊt ðæt ˈoʊ.vər.saɪt/",
         "communicativeIntent": "Acknowledging a small unintended mistake professionally",
         "pattern": "Sorry about that [NOUN].",
-        "connectedSpeech": "'about that' has an unreleased stop /ə-baʊ(t) ðæt/."
+        "connectedSpeech": "'about that' has an unreleased stop /ə-baʊ(t) ðæt/.",
+        "image": "/assets/images/restaurant.jpg"
       },
       {
         "phrase": "I'll have that done right away.",
         "ipa": "/aɪl hæv ðæt dʌn raɪt əˈweɪ/",
         "communicativeIntent": "Promising immediate action to resolve an issue",
         "pattern": "I'll have [OBJECT] [PARTICIPLE] right away.",
-        "connectedSpeech": "'right away' connects with a flap t: /raɪ-də-weɪ/."
+        "connectedSpeech": "'right away' connects with a flap t: /raɪ-də-weɪ/.",
+        "image": "/assets/images/restaurant.jpg"
       }
     ]
   }

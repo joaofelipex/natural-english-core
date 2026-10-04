@@ -181,6 +181,12 @@
           </div>
         </div>
 
+        <!-- Story Cover Image -->
+        <div class="w-full h-40 rounded-xl overflow-hidden border border-slate-800 relative mb-2">
+          <img id="story-cover-image" src="/assets/images/default.jpg" alt="Story Scene" class="w-full h-full object-cover opacity-70 transition-opacity duration-700" />
+          <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent pointer-events-none"></div>
+        </div>
+
         <div class="p-4 bg-slate-950/70 border border-slate-800 rounded-xl">
           <div class="text-[11px] font-mono uppercase text-slate-400 mb-1">Context Blueprint:</div>
           <p id="story-context" class="text-xs text-slate-300 leading-relaxed">
@@ -226,10 +232,12 @@
               Real interaction without grammar distraction.
             </p>
             
-            <div class="w-full aspect-square bg-slate-800/80 rounded-xl border border-slate-700/50 flex flex-col items-center justify-center p-4 text-center group">
-              <div id="visual-icon" class="text-6xl mb-3 group-hover:scale-110 transition transform">☕</div>
-              <span id="visual-meaning" class="text-xs font-semibold text-slate-200">Takeaway Cup & Walking</span>
-              <span class="text-[10px] text-slate-400 mt-1">Direct Concept Anchor</span>
+            <div class="w-full h-40 rounded-xl overflow-hidden border border-slate-700/50 relative group">
+              <img id="visual-image" src="/assets/images/default.jpg" alt="Scene" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-black/30 flex flex-col items-end justify-end p-3">
+                <span id="visual-icon" class="text-3xl drop-shadow-md">☕</span>
+                <span id="visual-meaning" class="text-[10px] font-semibold text-white/90 bg-black/50 px-2 py-0.5 rounded mt-1">Takeaway Cup & Walking</span>
+              </div>
             </div>
           </div>
 
@@ -496,7 +504,8 @@
         meaning: raw.chunk.communicativeIntent || "Direct Concept Anchor",
         phrase: raw.chunk.textPhrase,
         ipa: raw.chunk.phoneticIpa,
-        note: raw.chunk.collocationKey || "Formulaic Chunk"
+        note: raw.chunk.collocationKey || "Formulaic Chunk",
+        image: raw.chunk.image || '/assets/images/default.jpg'
       } : raw;
 
       document.getElementById('srs-card-idx').innerText = `Card ${srsIndex + 1} of ${list.length}`;
@@ -506,9 +515,12 @@
       document.getElementById('srs-ipa').innerText = c.ipa;
       document.getElementById('srs-pattern-note').innerHTML = `<strong>Formulaic Pattern:</strong> ${c.note}`;
       
-      // Request free image matching the concept (Zero API Key needed)
-      const imagePrompt = encodeURIComponent(c.meaning + ", realistic photography, minimal");
-      document.getElementById('srs-image').src = `https://image.pollinations.ai/prompt/${imagePrompt}?nologo=true&width=600&height=300`;
+      // Load local image bundled with the system (no external API needed)
+      const localImage = c.image || (raw.chunk && raw.chunk.image) || '/assets/images/default.jpg';
+      const imgEl = document.getElementById('srs-image');
+      imgEl.src = localImage;
+      imgEl.style.opacity = '0';
+      imgEl.onload = () => { imgEl.style.opacity = '0.55'; };
       
       // Reset reveal box
       document.getElementById('srs-revealed-box').classList.add('hidden');
@@ -555,6 +567,12 @@
     function renderStoryStage() {
       document.getElementById('story-title').innerText = defaultStory.title;
       document.getElementById('story-context').innerText = defaultStory.context;
+
+      // Set local cover image for this story
+      const coverImg = document.getElementById('story-cover-image');
+      coverImg.style.opacity = '0';
+      coverImg.src = defaultStory.image || '/assets/images/default.jpg';
+      coverImg.onload = () => { coverImg.style.opacity = '0.7'; };
       
       const p = document.getElementById('story-paragraph');
       const words = defaultStory.text.split(' ');
@@ -626,7 +644,8 @@
           meaning: raw.chunk.communicativeIntent || "Direct Concept Anchor",
           phrase: raw.chunk.textPhrase,
           ipa: raw.chunk.phoneticIpa,
-          note: raw.chunk.collocationKey || "Formulaic Chunk"
+          note: raw.chunk.collocationKey || "Formulaic Chunk",
+          image: raw.chunk.image || '/assets/images/default.jpg'
         };
       }
       return raw;
@@ -638,6 +657,12 @@
       document.getElementById('scenario-desc').innerText = c.desc;
       document.getElementById('visual-icon').innerText = c.icon || "🗣️";
       document.getElementById('visual-meaning').innerText = c.meaning;
+
+      // Update local scene image
+      const visImg = document.getElementById('visual-image');
+      visImg.style.opacity = '0';
+      visImg.src = c.image || '/assets/images/default.jpg';
+      visImg.onload = () => { visImg.style.opacity = '1'; };
       
       const container = document.getElementById('chunk-phrase-container');
       const words = c.phrase.split(' ');
